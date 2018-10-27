@@ -1,0 +1,3 @@
+    $ git status
+    $ cat ./data/bill data
+    $ cat ./data/campaign data

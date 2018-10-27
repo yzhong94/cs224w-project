@@ -1,0 +1,1 @@
+This folder hosts the processed data in the format of snap graph binary file

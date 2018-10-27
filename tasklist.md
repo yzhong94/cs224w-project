@@ -1,0 +1,20 @@
+To do list:
+- Identify which dataset to use for campaign funding -> candidate - Eddie
+- Identify which dataset to use for candidate -> bill - Yi
+- Need to join these two data sets (find common candidate identifier)
+- Identify train and test set -> 2000 - 2015 as train, 2016 - 2018 as test?
+- Import data to snap as graph
+    - Node table
+    - Edge list
+        - Campaign edge list - Eddie
+            - p1 - edge weighted by money
+        - Bill edge list - Yi
+    - Timeframe:
+        - Bill collaboration -> up to 2 years after election (during the term)
+        - Financial -> up to 2 years before election
+- Node attributes: party, senate/house, year
+- Network characteristics of candidate bill - Yi
+    - clustering coefficient, degree distribution and community detection-  
+    - feature extraction for link prediction
+-  Network characteristics of candidate donor - Eddie
+    - clustering coefficient, degree distribution and community detection-  - feature extraction for link predictions
