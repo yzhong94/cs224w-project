@@ -1,3 +1,8 @@
     $ git status
     $ cat ./data/bill data
     $ cat ./data/campaign data
+ccf.bill-legislator projection.plt
+ccf.bill-legislator projection.tab
+.vscode/settings.json
+hop.cosponsor-hops.tab
+*.plt
