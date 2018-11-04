@@ -60,6 +60,10 @@ def getBillNode(df):
     return bill_node
 
 def getLegislatorBillEdges(df, legislator_node, bill_node):
+    '''
+    SrcNId: bill node #
+    DstNId: legislator node #
+    '''
     #remove all withdrawn cases
     df = df[df["date_withdrawn"].isnull()]
 

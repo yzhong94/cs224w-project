@@ -62,7 +62,7 @@ def getCoSponsor(G, bill_node,legislator_node):
                 if CoSponsor.IsEdge(legislator_node['NId'][i],legislator_node['NId'][j]) == False:
                     CoSponsor.AddEdge(legislator_node['NId'][i],legislator_node['NId'][j]) 
 
-    #snap.SaveEdgeList(CoSponsor, 'cosponsor.txt')
+    snap.SaveEdgeList(CoSponsor, 'cosponsor.txt')
 
     return CoSponsor
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
     #graphAnalysis(G,bill_node,legislator_node)
 
-    #CoSponsor = getCoSponsor(G,bill_node,legislator_node)
-    CoSponsor = readGraph("processed-data/cosponsor.txt")
-    cosponsorGraphAnalysis(CoSponsor)
+    CoSponsor = getCoSponsor(G,bill_node,legislator_node)
+    #CoSponsor = readGraph("processed-data/cosponsor.txt")
+    #cosponsorGraphAnalysis(CoSponsor)
 
