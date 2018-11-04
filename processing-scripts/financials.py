@@ -150,6 +150,8 @@ def loadCandidateNodeID():
                  )
 
 	cm = loadCandidateMaster()
+	print(cm.shape)
+
 	canNode['name'] = map(lambda x: x.upper(), canNode['name'])
 	canNode['state'] = map(lambda x: x.upper(), canNode['state'])
 
@@ -225,14 +227,14 @@ if __name__ == "__main__":
 	print "G edge count is %d" % (G.GetEdges())
 
 	GraphClustCoeff = snap.GetClustCf(G, -1)
-	print "Clustering coefficient: %f" % (GraphClustCoeff) ## TODO: debug, this value = 0, seems wrong
+	print "Clustering coefficient: %f" % (GraphClustCoeff) ## doesn't make sense for bipartite
 
 	x, y = getDataPointsToPlot(G)
-	plt.loglog(x, y, linestyle = 'dotted', color = 'b', label = '2008 - 2016 Campaign Financial Network')
+	plt.loglog(x, y, linestyle = 'dotted', color = 'b', label = '1981 - 2016 Campaign Financial Network')
 	plt.xlabel('Node Degree (log)')
 	plt.ylabel('Proportion of Nodes with a Given Degree (log)')
 	plt.title('Degree Distribution of Campaign Financial Network')
 	plt.legend()
 	plt.show()
 
-	snap.SaveEdgeList(G, "../processed-data/campaignNetworks.txt", "Save 2008 to 2016 campaign network info as tab-separated list of edges, using unified candidate node IDs")
+	snap.SaveEdgeList(G, "../processed-data/campaignNetworks.txt", "Save 1981 to 2016 campaign network info as tab-separated list of edges, using unified candidate node IDs")
