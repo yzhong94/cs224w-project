@@ -20,6 +20,43 @@ def getDataPointsToPlot(Graph):
     ############################################################################
     return X, Y
 
+def getGraph(df):
+    G = snap.TUNGraph.New()
+
+    for index, row in df.iterrows():
+        SrcNId = int(row['SrcNId'])
+        DstNId = int(row['DstNId'])
+        if G.IsNode(SrcNId) == False:
+            G.AddNode(SrcNId)
+        if G.IsNode(DstNId) == False:
+            G.AddNode(DstNId)
+        G.AddEdge(SrcNId, DstNId)
+
+    return G
+
+def getCoSponsor(G, bill_node,legislator_node):
+    '''
+    returns the one mode projection graph of co-sponsorship
+
+    '''
+    CoSponsor = snap.TUNGraph.New()
+
+    print len(legislator_node)
+    for i in range(len(legislator_node)):
+        for j in range(i+1,len(legislator_node)):
+            Nbrs = snap.TIntV()
+            if snap.GetCmnNbrs(G,legislator_node[i],legislator_node[j]) != 0:
+                if CoSponsor.IsNode(legislator_node[i]) == False:
+                    CoSponsor.AddNode(legislator_node[i])
+                if CoSponsor.IsNode(legislator_node[j]) == False:
+                    CoSponsor.AddNode(legislator_node[j])
+                if CoSponsor.IsEdge(legislator_node[i],legislator_node[j]) == False:
+                    CoSponsor.AddEdge(legislator_node[i],legislator_node[j]) 
+
+    #snap.SaveEdgeList(CoSponsor, 'cosponsor.txt')
+
+    return CoSponsor
+
 
 def calcClusteringCoefficientSingleNode(Node, Graph):
     """

@@ -6,3 +6,8 @@ ccf.bill-legislator projection.tab
 .vscode/settings.json
 hop.cosponsor-hops.tab
 *.plt
+processed-data/campaignNetworks_raw.csv
+X.csv
+Y.csv
+X_test.csv
+Y_test.csv
