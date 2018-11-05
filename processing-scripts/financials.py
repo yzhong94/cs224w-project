@@ -113,6 +113,52 @@ def loadContributions():
 	result = result.groupby(['CMTE_ID','CAND_ID']).size().reset_index(name='Freq')
 
 	return result
+
+def loadContributionsYear():
+	filePath = "../data/financials/contributions_to_candidates/"
+	allFiles = glob.glob(filePath + "*.txt")
+
+	result = pd.concat(pd.read_table(f, sep='|', index_col=False, low_memory=False, 
+                 names=[
+                 'CMTE_ID'
+                 ,'AMNDT_IND'
+                 ,'RPT_TP'
+                 ,'TRANSACTION_PGI'
+                 ,'IMAGE_NUM'
+                 ,'TRANSACTION_TP'
+                 ,'ENTITY_TP'
+                 ,'NAME'
+                 ,'CITY'
+                 ,'STATE'
+                 ,'ZIP_CODE'
+                 ,'EMPLOYER'
+                 ,'OCCUPATION'
+                 ,'TRANSACTION_DT'
+                 ,'TRANSACTION_AMT'
+                 ,'OTHER_ID'
+                 ,'CAND_ID'
+                 ,'TRAN_ID'
+                 ,'FILE_NUM'
+                 ,'MEMO_CD'
+                 ,'MEMO_TEXT'
+                 ,'SUB_ID'
+                 ]) for f in allFiles)
+
+	result = result[['CMTE_ID','TRANSACTION_DT', 'TRANSACTION_AMT', 'CAND_ID']]
+	#result = result[['CMTE_ID','CAND_ID']]
+	result = result.groupby(['CMTE_ID','TRANSACTION_DT', 'TRANSACTION_AMT', 'CAND_ID']).size().reset_index(name='Freq')
+	## remove the case where committees received money from candidates
+	result = result[result.TRANSACTION_AMT >= 0]
+
+	result['ContributionYear'] = (result['TRANSACTION_DT'] % 10000).apply(pd.to_numeric, errors='coerce').fillna(0).astype(np.int64)
+	##remove the case where years are invalid
+	result = result[result.ContributionYear > 0]
+
+	print "---Processing contributions_to_candidates data..."
+	print result.head()
+
+	return result
+
 def getDataPointsToPlot(Graph):
     """
     :param - Graph: snap.PUNGraph object representing an undirected graph
@@ -164,7 +210,7 @@ def loadCandidateNodeID():
 	df = df[['fname','lname', 'name', 'state', 'CAND_ID', 'NId']]
 
 	df = df.groupby(['fname','lname', 'name', 'state', 'CAND_ID', 'NId']).size().reset_index(name='Freq')
-
+	print "---Processing candidates data..."
 	print(df.shape)
 	print(df.head())
 
@@ -185,18 +231,22 @@ def findBillNodeOffset():
 
 if __name__ == "__main__":
 
-	c = loadContributions()
+	#df = loadContributionsYear()
+
+	#c = loadContributions()
+	c = loadContributionsYear()
 	can = loadCandidateNodeID() #loadCandidateMaster()
 	com = loadCommMaster()
 
 	# merge dataframes together
 	c = pd.merge(c, can, on='CAND_ID', how='left')
 	c = pd.merge(c, com, on='CMTE_ID', how='left')
+	print "---after merging, raw combined file looks like this: "
+	print(c.head())
 
 	#c = c[['CMTE_ID','TRANSACTION_DT', 'TRANSACTION_AMT', 'CAND_ID', 'CMTE_NM',  'CAND_NAME']]
 	c = c.fillna('')
 
-	#print(c.head())
 	c[['NId','ComNodeId']] = c[['NId','ComNodeId']].apply(pd.to_numeric, errors='coerce').fillna(0).astype(np.int64)
 	
 	## remove entries where Nid = 0, meaning unsuccessful candidates
@@ -211,8 +261,13 @@ if __name__ == "__main__":
 
 	c['ComNodeId'] = c['ComNodeId'] + d
 
+	print "---after cleaning, raw combined file looks like this: "
 	print(c.head())
+	print(c.shape)
+	## save raw file
+	c.to_csv("../processed-data/campaignNetworks_raw.csv", index = False)
 
+	print "---done saving  "
 	## create an undirect graph
 	G = snap.TUNGraph.New()
 	for index, row in c.iterrows():
