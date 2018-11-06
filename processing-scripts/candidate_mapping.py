@@ -91,7 +91,7 @@ def loadContributionsYear():
     result = result[result.ContributionYear > 0]
 
 
-    result["ComNodeId"] = result['CMTE_ID'].reset_index().index
+    result["ComNodeId"] = result.groupby(['CMTE_ID']).ngroup()
 
 
 

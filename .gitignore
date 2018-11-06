@@ -112,3 +112,5 @@ processed-data/candidate_master_financials.xlsx
 processed-data/legislator_node.xlsx
 processed-data/mapping.xlsx
 processed-data/campaignNetworks_raw_v2.csv
+processed-data/campaignNetworks_v2.txt
+processed-data/com_combined.csv
