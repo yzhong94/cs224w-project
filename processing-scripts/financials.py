@@ -36,8 +36,8 @@ def loadCandidateMaster():
 	result['CAND_NAME'] = map(lambda x: x.upper(), result['CAND_NAME'])
 	result['state'] = map(lambda x: x.upper(), result['state'])
 
-	result['fname'], result['lname'] = result['CAND_NAME'].str.split(', ', 1).str
-	result['lname'], result['minitial'] = result['lname'].str.split(' ', 1).str
+	result['lname'], result['fname'] = result['CAND_NAME'].str.split(', ', 1).str
+	result['fname'], result['minitial'] = result['fname'].str.split(' ', 1).str
 
 	#result["CanNodeId"] = result.reset_index().index
 
@@ -201,8 +201,11 @@ def loadCandidateNodeID():
 	canNode['name'] = map(lambda x: x.upper(), canNode['name'])
 	canNode['state'] = map(lambda x: x.upper(), canNode['state'])
 
-	canNode['fname'], canNode['lname'] = canNode['name'].str.split(', ', 1).str
-	canNode['lname'], canNode['minitial'] = canNode['lname'].str.split(' ', 1).str
+	canNode['lname'], canNode['fname'] = canNode['name'].str.split(', ', 1).str
+	canNode['fname'], canNode['minitial'] = canNode['fname'].str.split(' ', 1).str
+
+	#print(cm[cm.lname == 'LEWIS']['fname'].unique())
+	#print(canNode[canNode.lname == 'LEWIS']['fname'].unique())
 
 	## Join on fname, lname, and state/CAND_OFFICE_ST
 	df = pd.merge(canNode, cm, on=['fname','lname','state'], how='left')
@@ -246,7 +249,9 @@ if __name__ == "__main__":
 
 	#c = c[['CMTE_ID','TRANSACTION_DT', 'TRANSACTION_AMT', 'CAND_ID', 'CMTE_NM',  'CAND_NAME']]
 	c = c.fillna('')
+	print(c[c.lname == 'LEWIS']['fname'].unique()) ##debugging, to be removed
 
+	
 	c[['NId','ComNodeId']] = c[['NId','ComNodeId']].apply(pd.to_numeric, errors='coerce').fillna(0).astype(np.int64)
 	
 	## remove entries where Nid = 0, meaning unsuccessful candidates
@@ -281,8 +286,8 @@ if __name__ == "__main__":
 	print "G node count is %d" % (G.GetNodes())
 	print "G edge count is %d" % (G.GetEdges())
 
-	GraphClustCoeff = snap.GetClustCf(G, -1)
-	print "Clustering coefficient: %f" % (GraphClustCoeff) ## doesn't make sense for bipartite
+	#GraphClustCoeff = snap.GetClustCf(G, -1)
+	#print "Clustering coefficient: %f" % (GraphClustCoeff) ## doesn't make sense for bipartite
 
 	x, y = getDataPointsToPlot(G)
 	plt.loglog(x, y, linestyle = 'dotted', color = 'b', label = '1981 - 2016 Campaign Financial Network')
