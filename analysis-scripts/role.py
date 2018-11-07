@@ -201,14 +201,14 @@ def role(Graph):
     else:
         raise ValueError("Invalid graph: please use 'campaign' or 'bill'. ")
 
-    #basicFeature(G)
-    recursiveFeature(G, 322)
+    basicFeature(G)
+    #recursiveFeature(G, 322)
 
     return
 
 if __name__ == "__main__":
 	
-	#role("bill")
+	role("bill")
 	role("campaign")
 	#print "Done with Question 1.1!"
 

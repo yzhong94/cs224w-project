@@ -165,12 +165,18 @@ def foldBills():
 
 
     return H
+
+def foldCampaign():
+
+
+    return
+
 if __name__ == "__main__":
     
-    #plotDeg("bill")
+    plotDeg("bill")
     #projection("bill") ## this doesnt return after a day
-    #plotDeg("campaign")
+    plotDeg("campaign")
 
     #projection("campaign") ## this will take very long
 
-    B = foldBills()
+    #B = foldBills()

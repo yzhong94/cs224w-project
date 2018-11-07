@@ -79,9 +79,9 @@ def normalized_cut_minimization(Graph):
 
     L = np.subtract(D,A)
 
-    newD = np.linalg.inv(np.sqrt(D))
-    #newD = 1.0/np.sqrt(D)
-    #newD[np.isinf(newD)] = 0
+    #newD = np.linalg.inv(np.sqrt(D))
+    newD = 1.0/np.sqrt(D)
+    newD[np.isinf(newD)] = 0
 
     newL = np.matmul(newD,L)
     newL = np.matmul(newL,newD)
