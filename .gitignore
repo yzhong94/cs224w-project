@@ -115,3 +115,4 @@ processed-data/campaignNetworks_raw_v2.csv
 processed-data/campaignNetworks_v2.txt
 processed-data/com_combined.csv
 processed-data/contributionsAgg.csv
+analysis-scripts/common_function.pyc

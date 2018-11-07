@@ -120,11 +120,57 @@ def projection(Graph):
 
     return
 
+def getCoSponsor(G, bill_node,legislator_node):
+    '''
+    returns the one mode projection graph of co-sponsorship
+
+    '''
+    CoSponsor = snap.TUNGraph.New()
+
+    print "Legislator count: %d" % len(legislator_node)
+    print "Bill count: %d" % len(bill_node)
+
+    for i in range(len(legislator_node)):
+        for j in range(i+1,len(legislator_node)):
+            Nbrs = snap.TIntV()
+            if snap.GetCmnNbrs(G,legislator_node['NId'][i],legislator_node['NId'][j]) != 0:
+                if CoSponsor.IsNode(legislator_node['NId'][i]) == False:
+                    CoSponsor.AddNode(legislator_node['NId'][i])
+                if CoSponsor.IsNode(legislator_node['NId'][j]) == False:
+                    CoSponsor.AddNode(legislator_node['NId'][j])
+                if CoSponsor.IsEdge(legislator_node['NId'][i],legislator_node['NId'][j]) == False:
+                    CoSponsor.AddEdge(legislator_node['NId'][i],legislator_node['NId'][j]) 
+
+    #snap.SaveEdgeList(CoSponsor, 'cosponsor.txt')
+
+    return CoSponsor
+
+def foldBills():
+
+    G = readGraph("../processed-data/legislator_bill_edge_list_graph.txt")
+    bill_node = pd.read_csv('../processed-data/bill_node.csv')
+    legislator_node = pd.read_csv('../processed-data/legislator_node.csv')
+
+    H = getCoSponsor(G,bill_node,legislator_node)
+
+    print "Compressed Graph Node count total: %d" % (H.GetNodes())
+
+    print "Compressed Edge count total: %d" % (H.GetEdges())
+    
+    GraphClustCoeff = snap.GetClustCf(H, -1)
+    print "Bill Network Clustering coefficient: %f" % GraphClustCoeff
+
+    snap.SaveEdgeList(H, "../processed-data/bill_projection.txt", 
+        "Bill network - Save projected network info as tab-separated list of edges, using unified candidate node IDs")
+
+
+    return H
 if __name__ == "__main__":
     
     #plotDeg("bill")
-    #projection("bill") ## this will take very long
+    #projection("bill") ## this doesnt return after a day
     #plotDeg("campaign")
 
-    projection("campaign") ## this will take very long
+    #projection("campaign") ## this will take very long
 
+    B = foldBills()
