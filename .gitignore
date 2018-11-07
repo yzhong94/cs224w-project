@@ -116,3 +116,7 @@ processed-data/campaignNetworks_v2.txt
 processed-data/com_combined.csv
 processed-data/contributionsAgg.csv
 analysis-scripts/common_function.pyc
+analysis-scripts/common_function.pyc
+processed-data/campaign_projection.txt
+processed-data/bill_projection.txt
+analysis-scripts/common_function.pyc
