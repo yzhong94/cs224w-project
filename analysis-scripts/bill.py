@@ -9,8 +9,31 @@ import networkx as nx
 def readGraph(path):
     G = snap.LoadEdgeList(snap.PUNGraph, path, 0, 1)
     return G
+'''
+def readNX(path):
+    
+    path to csv for graph
+    SrcNId: bill number
+    DstNId: legislator number
+    bipartite = 1: bill number
+    bipartite = 0: legislator number
+    
+    df = pd.read_csv(path)
 
+    #df = df.head(5000)
 
+    G = nx.from_pandas_edgelist(df, 'SrcNId', 'DstNId', ['date_signed', 'congress_term'])
+    
+    bill_node = df['SrcNId'].unique().tolist()
+    legislator_node = df['DstNId'].unique().tolist()
+
+    for i in [n for n in G if n in legislator_node]:
+        G.nodes[i]['bipartite'] = 0
+    for i in [n for n in G if n in bill_node]:
+        G.nodes[i]['bipartite'] = 1
+
+    return G
+'''
 def graphAnalysis(G, bill_node, legislator_node):
     '''
     basic function to get some data about the graph for legislators and for bills:
@@ -65,16 +88,6 @@ def getCoSponsor(G, bill_node,legislator_node):
     #snap.SaveEdgeList(CoSponsor, 'cosponsor.txt')
 
     return CoSponsor
-
-def readToNX(path):
-    '''
-    taks a txt of edge list and returns a NX
-    NOT COMPLETE
-    '''
-    NX_G = nx.Graph()
-
-
-    return NX_G
     
 
 def cosponsorGraphAnalysis(CoSponsor):
@@ -91,7 +104,29 @@ def cosponsorGraphAnalysis(CoSponsor):
 
     pass
 
+
+def getCoSponsorNX(G,bill_nodes,legislator_nodes):
+
+    G = nx.bipartite.collaboration_weighted_projected_graph(G, legislator_nodes)
+    
+    return G
+
 if __name__ == "__main__":
+
+    #SrcNId = 1: bill number
+    #DstNId = 0 : legislator number
+    G = common_function.readNX('processed-data/legislator_bill_edge_list.csv')
+
+    #bipartite = 1: bill number
+    #bipartite = 0: legislator number
+    bill_nodes = {n for n, d in G.nodes(data=True) if d['bipartite']==1}
+    legislator_nodes = set(G) - bill_nodes
+
+    CoSponsor = getCoSponsorNX(G,bill_nodes,legislator_nodes)
+
+    nx.readwrite.edgelist.write_weighted_edgelist(CoSponsor, 'processed-data/CoSponsor_Weighted')
+
+    '''
     G = readGraph("processed-data/legislator_bill_edge_list_graph.txt")
     bill_node = pd.read_csv('processed-data/bill_node.csv')
     legislator_node = pd.read_csv('processed-data/legislator_node.csv')
@@ -101,4 +136,4 @@ if __name__ == "__main__":
     CoSponsor = getCoSponsor(G,bill_node,legislator_node)
     #CoSponsor = readGraph("processed-data/cosponsor.txt")
     #cosponsorGraphAnalysis(CoSponsor)
-
+    '''
