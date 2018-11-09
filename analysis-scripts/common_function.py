@@ -1,4 +1,29 @@
 import snap
+import networkx as nx
+import pandas as pd
+
+def readNX(path):
+    '''
+    path to csv for graph
+    returns a bipartite graph
+    bipartite = 1: SrcNId
+    bipartite = 0: DstNId
+    '''
+    df = pd.read_csv(path)
+    df = df.head(5000)
+
+    G = nx.from_pandas_edgelist(df, 'SrcNId', 'DstNId', edge_attr = True)
+
+
+    SrcNId = df['SrcNId'].unique().tolist()
+    DstNId = df['DstNId'].unique().tolist()
+
+    for i in [n for n in G if n in SrcNId]:
+        G.nodes[i]['bipartite'] = 1
+    for i in [n for n in G if n in DstNId]:
+        G.nodes[i]['bipartite'] = 0
+
+    return G
 
 def getDataPointsToPlot(Graph):
     """
@@ -33,6 +58,8 @@ def getGraph(df):
         G.AddEdge(SrcNId, DstNId)
 
     return G
+
+
 
 def getCoSponsor(G, bill_node,legislator_node):
     '''

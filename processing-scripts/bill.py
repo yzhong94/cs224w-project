@@ -78,7 +78,7 @@ def getLegislatorBillEdges(df, legislator_node, bill_node):
 
     print legislator_bill_edge_list[legislator_bill_edge_list['DstNId'].isnull()].shape
 
-    return legislator_bill_edge_list[['SrcNId','DstNId','congress_term','date_signed']]
+    return legislator_bill_edge_list[['SrcNId','DstNId','congress_term','date_signed','bill_number','name','state']]
 
 
 def getGraph(legislator_bill_edge_list):
