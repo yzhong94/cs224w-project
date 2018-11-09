@@ -83,6 +83,54 @@ def plotDeg(Graph):
     plt.title('Degree Distribution')
     plt.legend()
     plt.show()
+
+    plt.figure()
+    plt.hist(cand, bins=range(min(cand), max(cand)+1), color = "skyblue", ec="blue", histtype = 'step', label="Candidates")
+    plt.xlabel('Degree')
+    plt.ylabel('Count')
+    plt.title('Degree Distribution for Legislators')
+    plt.legend()
+    plt.show()
+
+    return
+
+def plotDegOverall():
+    G = readGraph("../processed-data/combined_network.txt")
+
+    print " Graph Nodes: %d, Edges: %d" % (G.GetNodes(), G.GetEdges())
+    cand = []
+    com = []
+    bill = []
+    for NI in G.Nodes():
+        if NI.GetId() < 10000:
+            cand.append(NI.GetOutDeg())
+        elif NI.GetId() <= 231726: ##com nodeID offset
+            bill.append(NI.GetOutDeg())
+        else:
+            com.append(NI.GetOutDeg())
+    print " network highest degree is %d for candidates" % (max(cand))
+    print " network highest degree size is %d for bills" % (max(bill))
+    print " network highest degree size is %d for committees" % (max(com))
+
+    plt.figure()
+    plt.hist(cand, bins=range(min(cand), max(cand)+1), color = "skyblue", ec="blue", histtype = 'step', label="Candidates")
+    plt.hist(bill, bins=range(min(com), max(com)+1), color="green", ec="green", histtype = 'step', label="Bills")
+    plt.hist(com, bins=range(min(com), max(com)+1), color="red", ec="red", histtype = 'step', label="Committees")
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlabel('Degree')
+    plt.ylabel('Count')
+    plt.title('Degree Distribution')
+    plt.legend()
+    plt.show()
+
+    plt.figure()
+    plt.hist(cand, bins=range(min(cand), max(cand)+1), color = "skyblue", ec="blue", histtype = 'step', label="Candidates")
+    plt.xlabel('Degree')
+    plt.ylabel('Count')
+    plt.title('Degree Distribution')
+    plt.legend()
+    plt.show()
     return
 
 def projection(Graph):
@@ -166,17 +214,70 @@ def foldBills():
 
     return H
 
-def foldCampaign():
+def combineGraphs():
+    GB = readGraph("../processed-data/legislator_bill_edge_list_graph.txt")
+    bill_node = pd.read_csv('../processed-data/bill_node.csv')
+    legislator_node = pd.read_csv('../processed-data/legislator_node.csv')
 
+    GC = readGraph("../processed-data/campaignNetworks_v2.txt")
+    cnt = 0
+
+    for EI in GB.Edges():
+        a = EI.GetSrcNId()
+        b = EI.GetDstNId()
+        if GC.IsNode(a) == False:
+            GC.AddNode(a)
+            #print "Adding a legislator node, meaning he/she has no donations, check - node id %d" % (legislator_node['NId'][i])
+            if a < 10000:
+                cnt = cnt + 1
+        if GC.IsNode(b) == False:
+            GC.AddNode(b)
+            #print "Adding a legislator node, meaning he/she has no donations, check - node id %d" % (legislator_node['NId'][j])
+            if b < 10000:
+                cnt = cnt + 1
+        if GC.IsEdge(a,b) == False:
+            GC.AddEdge(a,b)
+
+    print "Added %d new legislator nodes" % (cnt)
+    print "Overall graph node count: %d, and edge count %d" % (GC.GetNodes(), GC.GetEdges())
+
+    snap.SaveEdgeList(GC, "../processed-data/combined_network.txt", "Save 1981 to 2016 combined network info as tab-separated list of edges, using unified candidate node IDs")
+
+    return
+
+def statsComm():
+    #G = readGraph("../processed-data/combined_network.txt")
+    com_node = set()
+    GC = readGraph("../processed-data/campaignNetworks_v2.txt") # campaignNetworks_v2
+    for NI in GC.Nodes():
+        if NI.GetId() >= 10000:
+            com_node.add(NI.GetId())
+
+    print "Comm node count %d,  out of %d Nodes" % (len(com_node), GC.GetNodes())
+    print "Comm edge count %d" % (GC.GetEdges())
+
+    com_node = set()
+    GC = readGraph("../processed-data/legislator_bill_edge_list_graph.txt") # campaignNetworks_v2
+    for NI in GC.Nodes():
+        if NI.GetId() >= 10000:
+            com_node.add(NI.GetId())
+
+    print "Bill node count %d,  out of %d Nodes" % (len(com_node), GC.GetNodes())
+    print "Bill edge count %d" % (GC.GetEdges())
 
     return
 
 if __name__ == "__main__":
     
+    ## Functions to generate degree distribution plots
     plotDeg("bill")
-    #projection("bill") ## this doesnt return after a day
     plotDeg("campaign")
+    #plotDegOverall()
 
+    ## Functions to fold graphs
     #projection("campaign") ## this will take very long
-
     #B = foldBills()
+    
+    ## Functions to pull overall stats for node counts and edge counts
+    #combineGraphs()
+    #statsComm()

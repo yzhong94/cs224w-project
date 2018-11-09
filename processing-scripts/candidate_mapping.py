@@ -111,13 +111,14 @@ def findBillNodeOffset():
 
     offset = bill['NId'].apply(pd.to_numeric, errors='coerce').fillna(0).astype(np.int64).max()
 
+    print "Committee NodeID Offset is %d" % (offset + 1)
+
     return offset
 
 if __name__ == "__main__":
-
+    
     c = loadContributionsYear()
     can = loadCandidateMaster() 
-    #com = loadCommMaster()
 
     # merge dataframes together
     c = pd.merge(c, can, on='CAND_ID', how='left')
@@ -139,11 +140,8 @@ if __name__ == "__main__":
     ## add differential to commmittee node IDs, based on bill network
     
     d = findBillNodeOffset()
-    
-    #diff = max(c['NId']) + 1
-    #print(diff)
 
-    c['ComNodeId'] = c['ComNodeId'] + d
+    c['ComNodeId'] = c['ComNodeId'] + d + 1 # need to plus one so as not to collide with bills
 
     print "---after cleaning, raw combined file looks like this: "
     print(c.head())
