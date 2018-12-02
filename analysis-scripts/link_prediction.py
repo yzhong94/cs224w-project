@@ -45,6 +45,26 @@ def getSponsorLink(df):
 
     return CoSponsor
 
+def getCampaign(df):
+    '''
+    For a given term's campaign data, return a graph with edge attributes of contribution amount
+    '''
+    G_Campaign = snap.TNEANet.New()
+    G_Campaign.AddIntAttrE('TRANSACTION_AMT',0)
+
+    for index, row in df.iterrows():
+        SrcNId = int(row['SrcNId'])
+        DstNId = int(row['DstNId'])
+        if G_Campaign.IsNode(SrcNId) == False:
+            G_Campaign.AddNode(SrcNId)
+        if G_Campaign.IsNode(DstNId) == False:
+            G_Campaign.AddNode(DstNId)
+        G_Campaign.AddEdge(SrcNId, DstNId)
+        eid = G_Campaign.GetEId(SrcNId, DstNId)
+        G_Campaign.AddIntAttrDatE(eid, int(row['TRANSACTION_AMT']), 'TRANSACTION_AMT')
+
+    return G_Campaign
+
 def getY(G_CoSponsor,legislator_node):
     '''
     return a 3D pd df (node i, node j, link_result)
@@ -138,36 +158,14 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
             X['Contribution_Sum'][index] = node_i_contribution_sum + node_j_contribution_sum
             X['Contribution_Diff'][index] = abs(node_i_contribution_sum - node_j_contribution_sum)
 
-
-            
-
     X['Jaccard'] = X['CommNeighbors'].astype(float)/X['Union_of_Neighbors'].astype(float)
     
     #print X['Jaccard']
     X['Jaccard'].replace(np.inf,0.0)
     X['Jaccard'] = X['Jaccard'].fillna(0.0)
 
-        #print "index", index
-        #print "node i is in campaign", 
-        #print "node j is in campaign", G_Campaign.IsNode(row['node_j'])
-        #print "node j id", row['node_j']
-
     print "-----    DONE    -----"
-    #X['Node_i_deg'] = X.apply(lambda row: G_Campaign.GetNI(row['node_i']).GetDeg(), axis = 1)
-    #X['Node_j_deg'] = X.apply(lambda row: G_Campaign.GetNI(row['node_j']).GetDeg(), axis = 1)
 
-    #X['Degree_Diff'] = X.apply(lambda row: abs(G_Campaign.GetNI(row['node_i']).GetDeg() - G_Campaign.GetNI(row['node_j']).GetDeg()), axis = 1)
-    
-    #X['Union_of_Neighbors'] = X.apply(lambda row: float(len(list(set().union(getNeighbors(row['node_i'],G_Campaign),getNeighbors(row['node_j'],G_Campaign))))),axis = 1)
-    #X['Jaccard'] = X.apply(lambda row: row['CommNeighbors']/row['Union_of_Neighbors'], axis = 1)
-    
-
-    '''
-
-    for index, row in legislator_node.iterrows():
-        legislator_dis.append(G.GetNI(row['NId']).GetOutDeg())
-
-    '''
 
     return X, Y
 
@@ -230,24 +228,12 @@ def main():
     bill_node = df['SrcNId'].unique().tolist()
     legislator_node = df['DstNId'].unique().tolist()
     comm_node = fin_df['SrcNId'].unique().tolist()
+
     legislator_node_from_campaign = fin_df['DstNId'].unique().tolist()
 
     G_CoSponsor = getSponsorLink(df)
 
-    G_Campaign = snap.TNEANet.New()
-    G_Campaign.AddIntAttrE('TRANSACTION_AMT',0)
-
-    for index, row in fin_df.iterrows():
-        SrcNId = int(row['SrcNId'])
-        DstNId = int(row['DstNId'])
-        if G_Campaign.IsNode(SrcNId) == False:
-            G_Campaign.AddNode(SrcNId)
-        if G_Campaign.IsNode(DstNId) == False:
-            G_Campaign.AddNode(DstNId)
-        G_Campaign.AddEdge(SrcNId, DstNId)
-        eid = G_Campaign.GetEId(SrcNId, DstNId)
-        G_Campaign.AddIntAttrDatE(eid, int(row['TRANSACTION_AMT']), 'TRANSACTION_AMT')
-
+    G_Campaign = getCampaign(fin_df)
 
     X, Y = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign)
     
@@ -267,19 +253,7 @@ def main():
 
     G_CoSponsor = getSponsorLink(df)
 
-    G_Campaign = snap.TNEANet.New()
-    G_Campaign.AddIntAttrE('TRANSACTION_AMT',0)
-
-    for index, row in fin_df.iterrows():
-        SrcNId = int(row['SrcNId'])
-        DstNId = int(row['DstNId'])
-        if G_Campaign.IsNode(SrcNId) == False:
-            G_Campaign.AddNode(SrcNId)
-        if G_Campaign.IsNode(DstNId) == False:
-            G_Campaign.AddNode(DstNId)
-        G_Campaign.AddEdge(SrcNId, DstNId)
-        eid = G_Campaign.GetEId(SrcNId, DstNId)
-        G_Campaign.AddIntAttrDatE(eid, int(row['TRANSACTION_AMT']), 'TRANSACTION_AMT')
+    G_Campaign = getCampaign(fin_df)
 
 
     X_test, Y_test = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign)
@@ -299,7 +273,6 @@ def main():
     X_test = X_test.drop(columns=['node_i','node_j'])
 
     print "baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
-    print Y.shape
     Y = Y['result']
     Y_test = Y_test['result']
 
