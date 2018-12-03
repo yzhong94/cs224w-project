@@ -32,6 +32,11 @@ def loadFinancialData(start_year, end_year):
     print list(term_financial_data)
     return term_financial_data[['DstNId','SrcNId','TRANSACTION_AMT']]
 
+def loadParty(df):
+    party_data = pd.read_csv('')
+
+    return
+
 def getSponsorLink(df):
     '''
     For a given term's df, return the cosponsor projection in snap undirected graph

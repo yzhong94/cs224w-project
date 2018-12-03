@@ -6,6 +6,8 @@ from gensim.models import Word2Vec
 import numpy as np
 import pandas as pd
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
 def learn_embeddings(walks):
     '''
 	Learn embeddings by optimizing the Skipgram objective using SGD.
@@ -41,13 +43,19 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     total_num_operations = 3
     num_dimensions = emb.shape[1] - 1 #from embedding
 
+    node_id = emb[:,0]
 
     Y = link_prediction.getY(G_CoSponsor,legislator_node)
     print "before dropping", Y.shape
     
     for l in legislator_node:
-        if l not in legislator_node_from_campaign:
+        if l not in node_id:
             legislator_node.remove(l)
+        if l not in legislator_node_from_campaign:
+            try:
+                legislator_node.remove(l)
+            except:
+                pass
 
     print "after dropping", len(legislator_node)
     
@@ -61,12 +69,71 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
         X[str(i)] = 0.0
         #print X[str(i)]
 
+
     X['distance'] = 0.0
     print X.head(1)
-
-    node_id = emb[:,0]
     #remove any data that has no match in campaign
+    #print "before dropping", Y.shape[0]
+    '''
     for index, row in X.iterrows():
+        if int(row['node_i']) not in legislator_node:
+            X.drop(X.index[index])
+            Y.drop(Y.index[index])
+        if int(row['node_j']) not in legislator_node:
+            X.drop(X.index[index])
+            Y.drop(Y.index[index])
+        if int(row['node_i']) not in list(node_id):
+            X.drop(X.index[index])
+            Y.drop(Y.index[index])
+        if int(row['node_j']) not in list(node_id):
+            X.drop(X.index[index])
+            Y.drop(Y.index[index])
+    print "after dropping", Y.shape[0]
+
+    X.to_csv('X_filtered.csv', index = False)
+    Y.to_csv('Y_filtered.csv', index = False)
+    '''
+    #print(emb[np.where(node_id==1542),1:])
+    node_id.sort()
+    np.savetxt('nodes.csv',node_id)
+    
+
+
+    def compute_attri(x): 
+        #print x
+        print x['node_i']
+        print x['node_j']
+        try:
+            emb_i = emb[np.where(node_id==x['node_i']),1:][0][0]
+            emb_j = emb[np.where(node_id==x['node_j']),1:][0][0]
+            emb_sum = emb_i+emb_j
+            emb_avg = np.mean([emb_i, emb_j],axis = 0)
+            emb_hada = np.multiply(emb_i,emb_j)
+            emb_dis = np.linalg.norm(emb_i - emb_j)
+            #X['distance'][index] = emb_dis
+            result = {
+                "distance": emb_dis
+            }
+            #for i in range(num_dimensions):
+            result.update({str(i):emb_sum[i] for i in range(num_dimensions)})
+            result.update({str(i+num_dimensions):emb_avg[i] for i in range(num_dimensions)})
+            result.update({str(i+num_dimensions*2):emb_hada[i] for i in range(num_dimensions)})
+        except:
+            result = {}
+            pass
+        
+
+        return pd.Series(result,name="Attri")
+    
+    #X.head(50)
+    X = X.apply(compute_attri, axis = 1)
+    print X
+    
+    '''       
+    for index, row in X.iterrows():
+        if index%100 ==0:
+            print index
+        #print index
         if G_Campaign.IsNode(int(row['node_i'])) == False or G_Campaign.IsNode(int(row['node_j'])) == False:
             X.drop(X.index[index])
             Y.drop(Y.index[index])
@@ -77,18 +144,16 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
             emb_avg = np.mean([emb_i, emb_j],axis = 0)
             emb_hada = np.multiply(emb_i,emb_j)
             emb_dis = np.linalg.norm(emb_i - emb_j)
-            print emb_dis
             X['distance'][index] = emb_dis
-            print index
             
             for i in range(num_dimensions):
                 X[str(i)][index] = emb_sum[i]
                 X[str(i+num_dimensions)][index] = emb_avg[i]
                 X[str(i+num_dimensions*2)][index] = emb_hada[i]
             
-            
+    '''      
 
-    print X
+    #print X
     return X, Y
 
 def main():
@@ -123,9 +188,10 @@ def main():
     X, Y = getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,legislator_node_from_campaign,emb)
     X.to_csv('X_emb.csv', index = False)
     Y.to_csv('Y_emb.csv', index = False)
-
+    '''
     print "logistic"
     clf = link_prediction.getlogistic(X,Y)
+    '''
     pass
 
 
