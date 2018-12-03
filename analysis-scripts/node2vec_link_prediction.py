@@ -37,9 +37,9 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     return two pd: X, Y based on embedding
     using: concatenate, Hadamard, Sum/Avg, Distance
     '''    
-    #number of operations performed to emb
-    num_operations = 1
-    num_dimensions = emb.shape[0] - 1 #from embedding
+    #number of element-wise operations performed to emb
+    total_num_operations = 3
+    num_dimensions = emb.shape[1] - 1 #from embedding
 
 
     Y = link_prediction.getY(G_CoSponsor,legislator_node)
@@ -54,30 +54,42 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     Y = link_prediction.getY(G_CoSponsor,legislator_node)
 
     print "after dropping", Y.shape
-
+    num_operation = 0
     X = Y[['node_i', 'node_j']]
-    for i in range(num_dimensions):
-        X[str(i)] = 0
+    for i in range(num_dimensions*total_num_operations):
+        #print i
+        X[str(i)] = 0.0
+        #print X[str(i)]
 
+    X['distance'] = 0.0
     print X.head(1)
 
     node_id = emb[:,0]
     #remove any data that has no match in campaign
     for index, row in X.iterrows():
-        if index >5:
-            break
-        if G_Campaign.IsNode(row['node_i']) == False or G_Campaign.IsNode(row['node_j']) == False:
+        if G_Campaign.IsNode(int(row['node_i'])) == False or G_Campaign.IsNode(int(row['node_j'])) == False:
             X.drop(X.index[index])
             Y.drop(Y.index[index])
         else:
             emb_i = emb[np.where(node_id==row['node_i']),1:][0][0]
             emb_j = emb[np.where(node_id==row['node_j']),1:][0][0]
-            print emb_i.shape
             emb_sum = emb_i+emb_j
-
+            emb_avg = np.mean([emb_i, emb_j],axis = 0)
+            emb_hada = np.multiply(emb_i,emb_j)
+            emb_dis = np.linalg.norm(emb_i - emb_j)
+            print emb_dis
+            X['distance'][index] = emb_dis
+            print index
+            
+            for i in range(num_dimensions):
+                X[str(i)][index] = emb_sum[i]
+                X[str(i+num_dimensions)][index] = emb_avg[i]
+                X[str(i+num_dimensions*2)][index] = emb_hada[i]
+            
             
 
-
+    print X
+    return X, Y
 
 def main():
     
@@ -92,10 +104,10 @@ def main():
 
     G_CoSponsor = link_prediction.getSponsorLink(df)
 
-    G_Campaign = link_prediction.getCampaign(fin_df)
+    #G_Campaign = link_prediction.getCampaign(fin_df)
 
-    snap.SaveEdgeList(G_Campaign, "G_campaign.txt")
-    
+    #snap.SaveEdgeList(G_Campaign, "G_campaign.txt")
+    G_Campaign = snap.LoadEdgeList(snap.PUNGraph, "G_campaign.txt", 0, 1)
     '''
     p = 1
     q = 0.5
@@ -108,7 +120,12 @@ def main():
     emb = np.loadtxt('embedding.emb', skiprows = 1)
     node_id = emb[:,0]
 
-    getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,legislator_node_from_campaign,emb)
+    X, Y = getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,legislator_node_from_campaign,emb)
+    X.to_csv('X_emb.csv', index = False)
+    Y.to_csv('Y_emb.csv', index = False)
+
+    print "logistic"
+    clf = link_prediction.getlogistic(X,Y)
     pass
 
 
