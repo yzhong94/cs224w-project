@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 ### adapted from HW3 Q1.1
+### Input: campaign or bill graphs
+### Output: +/- lable for each node on which cluster they belong to
 
 def load_graph(name):
     '''
@@ -143,16 +145,17 @@ def q1_1():
     '''
     ##########################################################################
 
-    print "Graph: Bill"
-    G = load_graph("bill") ##normal
-    c1, c2 = normalized_cut_minimization(G)
+    #print "Graph: Bill"
+    #G = load_graph("bill") ##normal
+    #c1, c2 = normalized_cut_minimization(G)
 
-    Q = modularity(G, c1, c2)
-    print "----------"
+    #Q = modularity(G, c1, c2)
+    #print "----------"
 
     print "Graph: Campaign"
     G = load_graph("campaign") ##normal
     c1, c2 = normalized_cut_minimization(G)
+    output(c1, c2)
 
     Q = modularity(G, c1, c2)
     print "----------"
@@ -161,6 +164,23 @@ def q1_1():
     pass
     ##########################################################################
 
+def output(s1, s2):
+    s1 = list(s1)
+    s2 = list(s2)
+
+    res = np.zeros((len(s1)+len(s2), 2), int)
+    for i in xrange(0,len(s1)):
+        res[i][0] = s1[i]
+        res[i][1] = 1
+
+    for j in xrange(0,len(s2)):
+        res[j + len(s1)][0] = s2[j]
+        res[j + len(s1)][1] = -1
+
+    print "Saving csv file..."
+    np.savetxt('spectral.out', res, delimiter=',')
+
+    return
 
 if __name__ == "__main__":
 
