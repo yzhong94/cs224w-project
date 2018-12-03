@@ -65,44 +65,13 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     num_operation = 0
     X = Y[['node_i', 'node_j']]
     for i in range(num_dimensions*total_num_operations):
-        #print i
         X[str(i)] = 0.0
-        #print X[str(i)]
-
 
     X['distance'] = 0.0
     print X.head(1)
-    #remove any data that has no match in campaign
-    #print "before dropping", Y.shape[0]
-    '''
-    for index, row in X.iterrows():
-        if int(row['node_i']) not in legislator_node:
-            X.drop(X.index[index])
-            Y.drop(Y.index[index])
-        if int(row['node_j']) not in legislator_node:
-            X.drop(X.index[index])
-            Y.drop(Y.index[index])
-        if int(row['node_i']) not in list(node_id):
-            X.drop(X.index[index])
-            Y.drop(Y.index[index])
-        if int(row['node_j']) not in list(node_id):
-            X.drop(X.index[index])
-            Y.drop(Y.index[index])
-    print "after dropping", Y.shape[0]
-
-    X.to_csv('X_filtered.csv', index = False)
-    Y.to_csv('Y_filtered.csv', index = False)
-    '''
-    #print(emb[np.where(node_id==1542),1:])
-    node_id.sort()
-    np.savetxt('nodes.csv',node_id)
-    
 
 
     def compute_attri(x): 
-        #print x
-        print x['node_i']
-        print x['node_j']
         try:
             emb_i = emb[np.where(node_id==x['node_i']),1:][0][0]
             emb_j = emb[np.where(node_id==x['node_j']),1:][0][0]
@@ -127,39 +96,12 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     
     #X.head(50)
     X = X.apply(compute_attri, axis = 1)
-    print X
-    
-    '''       
-    for index, row in X.iterrows():
-        if index%100 ==0:
-            print index
-        #print index
-        if G_Campaign.IsNode(int(row['node_i'])) == False or G_Campaign.IsNode(int(row['node_j'])) == False:
-            X.drop(X.index[index])
-            Y.drop(Y.index[index])
-        else:
-            emb_i = emb[np.where(node_id==row['node_i']),1:][0][0]
-            emb_j = emb[np.where(node_id==row['node_j']),1:][0][0]
-            emb_sum = emb_i+emb_j
-            emb_avg = np.mean([emb_i, emb_j],axis = 0)
-            emb_hada = np.multiply(emb_i,emb_j)
-            emb_dis = np.linalg.norm(emb_i - emb_j)
-            X['distance'][index] = emb_dis
-            
-            for i in range(num_dimensions):
-                X[str(i)][index] = emb_sum[i]
-                X[str(i+num_dimensions)][index] = emb_avg[i]
-                X[str(i+num_dimensions*2)][index] = emb_hada[i]
-            
-    '''      
 
-    #print X
     return X, Y
 
-def main():
-    
-    df = link_prediction.loadBillData(100) #get bill data for 100th congress
-    fin_df = link_prediction.loadFinancialData(1985,1986) #get financial data from two years prior
+def getXYFromEmb(bill_term,fin_start_year, fin_end_year):
+    df = link_prediction.loadBillData(bill_term) 
+    fin_df = link_prediction.loadFinancialData(fin_start_year,fin_end_year) #get financial data from two years prior
     
     bill_node = df['SrcNId'].unique().tolist()
     legislator_node = df['DstNId'].unique().tolist()
@@ -169,16 +111,16 @@ def main():
 
     G_CoSponsor = link_prediction.getSponsorLink(df)
 
-    #G_Campaign = link_prediction.getCampaign(fin_df)
+    G_Campaign = link_prediction.getCampaign(fin_df)
 
-    #snap.SaveEdgeList(G_Campaign, "G_campaign.txt")
-    G_Campaign = snap.LoadEdgeList(snap.PUNGraph, "G_campaign.txt", 0, 1)
-    '''
+    snap.SaveEdgeList(G_Campaign, "G_campaign.txt")
+    #G_Campaign = snap.LoadEdgeList(snap.PUNGraph, "G_campaign.txt", 0, 1)
+    
     p = 1
     q = 0.5
     walk_length = 80
     getEmbeddings("G_campaign.txt", p, q,walk_length)
-    '''
+    
 
     print G_Campaign.GetNodes()
     
@@ -186,13 +128,21 @@ def main():
     node_id = emb[:,0]
 
     X, Y = getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,legislator_node_from_campaign,emb)
-    X.to_csv('X_emb.csv', index = False)
-    Y.to_csv('Y_emb.csv', index = False)
+
+    inds = pd.isnull(X).any(1).nonzero()[0]
+
+    X =  X.drop(inds)
+    Y =  Y.drop(inds)
+
+    return X, Y
+
+def main():
     '''
-    print "logistic"
-    clf = link_prediction.getlogistic(X,Y)
+    returns embedding for 100th congress
+
     '''
-    pass
+    getXYFromEmb(100,1985, 1986)
+    return 
 
 
 if __name__ == "__main__":

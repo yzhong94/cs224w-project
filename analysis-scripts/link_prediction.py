@@ -32,10 +32,13 @@ def loadFinancialData(start_year, end_year):
     print list(term_financial_data)
     return term_financial_data[['DstNId','SrcNId','TRANSACTION_AMT']]
 
-def loadParty(df):
-    party_data = pd.read_csv('')
-
-    return
+def loadParty(path):
+    party_data = pd.read_csv(path)
+    print list(party_data)
+    party_data = party_data[['NodeID','Party']]
+    party_data = party_data.drop_duplicates(subset = ['NodeID','Party'])
+    print party_data
+    return party_data
 
 def getSponsorLink(df):
     '''
@@ -197,6 +200,14 @@ def getTree(X,Y):
     print clf.score(X,Y)
     return clf
 
+def getBaselineFeatures(X, Y, party_df):
+    X_base = X[['node_i', 'node_j']]
+    print X.shape
+    X_base = X_base.merge(party_df,left_on = 'node_i', right_on = "NodeID" ,how="left",)
+    X_base = X_base.merge(party_df,left_on = 'node_j', right_on = "NodeID" ,how="left",)
+    #X_base.to_csv('X_base.csv')
+    return X, Y
+
 def main():
     '''
     Main script for link prediction:
@@ -208,7 +219,7 @@ def main():
     bill_data = pd.read_csv('processed-data/legislator_bill_edge_list.csv')
     financial_data = financial_data.rename(index=str, columns={"NodeID": "DstNId", "ComNodeId": "SrcNId"})
 
-
+    
     
     G = common_function.getGraph(financial_data)
     
@@ -267,12 +278,19 @@ def main():
     Y_test.to_csv('Y_test.csv', index = False)
     
     
-    print "-----BEGAN CLASSIFICATION-----"    
+    print "-----BEGAN CLASSIFICATION-----"   
     X = pd.read_csv('X.csv')
     Y = pd.read_csv('Y.csv')
 
     X_test = pd.read_csv('X_test.csv')
-    Y_test = getY(G_CoSponsor,legislator_node)
+    Y_test = pd.read_csv('Y_test.csv')
+    
+    '''------GET BASELINE WITH PARTYLINE INFORMATION ONLY------'''
+    party_df = loadParty('processed-data/candidate_node_mapping_manual_party.csv')
+    getBaselineFeatures(X,Y,party_df)
+
+    
+
 
     X = X.drop(columns=['node_i','node_j'])
     X_test = X_test.drop(columns=['node_i','node_j'])
@@ -294,6 +312,7 @@ def main():
     clf_svc = getSVC(X,Y)
     print clf_svc.score(X_test,Y_test)
     '''
+
     pass
 
 
