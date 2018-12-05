@@ -7,6 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn import tree
 import networkx
+import time
 
 def loadBillData(term):
     '''
@@ -55,7 +56,7 @@ def getSponsorLink(df):
 
 def getCampaign(df):
     '''
-    For a given term's campaign data, return a graph with edge attributes of contribution amount
+    For a given term's campaign data, return a bi-partite graph with edge attributes of contribution amount
     '''
     G_Campaign = snap.TNEANet.New()
     G_Campaign.AddIntAttrE('TRANSACTION_AMT',0)
@@ -73,6 +74,27 @@ def getCampaign(df):
 
     return G_Campaign
 
+def getCampaign_folded(G,legislator_node):
+    G_Campaign_folded = snap.TUNGraph.New()
+
+    for i in range(len(legislator_node)):
+        for j in range(i+1,len(legislator_node)):
+            Nbrs = snap.TIntV()
+            if snap.GetCmnNbrs(G,legislator_node[i],legislator_node[j]) != 0:
+                if G_Campaign_folded.IsNode(legislator_node[i]) == False:
+                    G_Campaign_folded.AddNode(legislator_node[i])
+                if G_Campaign_folded.IsNode(legislator_node[j]) == False:
+                    G_Campaign_folded.AddNode(legislator_node[j])
+                if G_Campaign_folded.IsEdge(legislator_node[i],legislator_node[j]) == False:
+                    G_Campaign_folded.AddEdge(legislator_node[i],legislator_node[j]) 
+            else:
+                if G_Campaign_folded.IsNode(legislator_node[i]) == False:
+                    G_Campaign_folded.AddNode(legislator_node[i])
+                if G_Campaign_folded.IsNode(legislator_node[j]) == False:
+                    G_Campaign_folded.AddNode(legislator_node[j])
+            
+    return G_Campaign_folded
+
 def getY(G_CoSponsor,legislator_node):
     '''
     return a 3D pd df (node i, node j, link_result)
@@ -80,7 +102,16 @@ def getY(G_CoSponsor,legislator_node):
     '''
     Y = []
     #print legislator_node
-
+    '''
+    for i in range(len(legislator_node)):
+        for j in range(i+1,len(legislator_node)):
+            if i != j:
+                result = G_CoSponsor.IsEdge(legislator_node[i],legislator_node[j])
+                if result:
+                    Y.append((legislator_node[i],legislator_node[j],1))
+                else:
+                    Y.append((legislator_node[i],legislator_node[j],-1))
+    '''
     for i in range(len(legislator_node)):
         for j in range(i+1,len(legislator_node)):
             if i != j:
@@ -93,6 +124,7 @@ def getY(G_CoSponsor,legislator_node):
     labels = ['node_i', 'node_j', 'result']
     Y = pd.DataFrame.from_records(Y, columns=labels)
 
+    #print Y
     return Y
 
 def getNeighbors(node, G):
@@ -108,7 +140,7 @@ def getNeighbors(node, G):
 
     return neighbors
 
-def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,legislator_node_from_campaign):
+def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,legislator_node_from_campaign,G_Campaign_folded):
     '''
     return two pd: X, Y
     '''    
@@ -118,62 +150,79 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     for l in legislator_node:
         if l not in legislator_node_from_campaign:
             legislator_node.remove(l)
-
-    print "after dropping", len(legislator_node)
     
     Y = getY(G_CoSponsor,legislator_node)
 
     print "after dropping", Y.shape
 
-    #first feature: number of common neighbors between node i and node j
-
     X = Y[['node_i', 'node_j']]
 
-    X['Degree_Diff'] = 0
-    X['Union_of_Neighbors'] = 0
-    X['CommNeighbors'] = 0
-    X['Contribution_Sum'] = 0
-    X['Contribution_Diff'] = 0
-    #X['CommNeighbors'] = X.apply(lambda row: snap.GetCmnNbrs(G_Campaign,row['node_i'],row['node_j']),axis = 1)
+    #list of features
 
-    for index, row in X.iterrows():
-        node_i_contribution_sum = 0
-        node_j_contribution_sum = 0
-        neighbors_i = []
-        neighbors_j = []
-        
-        if G_Campaign.IsNode(row['node_i']) == False or G_Campaign.IsNode(row['node_j']) == False:
-            X.drop(X.index[index])
-            Y.drop(Y.index[index])
-        else:
-            X['Degree_Diff'][index] = abs(G_Campaign.GetNI(row['node_i']).GetInDeg() - G_Campaign.GetNI(row['node_j']).GetInDeg())
-            X['Union_of_Neighbors'][index] = float(len(list(set().union(getNeighbors(row['node_i'],G_Campaign),getNeighbors(row['node_j'],G_Campaign)))))
-            #print "Union_of_Neighbors", X['Union_of_Neighbors'][index]
-            X['CommNeighbors'][index] = snap.GetCmnNbrs(G_Campaign,row['node_i'],row['node_j'])
-            #print "CommNeighbors", X['CommNeighbors'][index]
-            
+    X['Degree_Diff'] = 0
+    X['Union_of_Neighbors'] = 0.0
+    X['CommNeighbors'] = 0.0
+    X['Contribution_Sum'] = 0.0
+    X['Contribution_Diff'] = 0.0
+    X['Clustering_Coeff_Diff'] = 0.0
+    X['Clustering_Coeff_Sum'] = 0.0
+    X['Clustering_Coeff_Avg'] = 0.0
+    X['Jaccard'] = 0.0
+    X['Shortest_Dist'] = 0.0
+    X['Deg_Centrality_Diff'] = 0.0
+
+    def compute_attri(x):
+        NId_i = int(x['node_i'])
+        NId_j = int(x['node_j'])
+        if G_Campaign_folded.IsNode(NId_i) and G_Campaign_folded.IsNode(NId_j):
+            node_i_contribution_sum = 0.0
+            node_j_contribution_sum = 0.0
+            neighbors_i = []
+            neighbors_j = []
+
+
+            clustering_cf_i = snap.GetNodeClustCf(G_Campaign_folded, NId_i)
+            clustering_cf_j = snap.GetNodeClustCf(G_Campaign_folded, NId_j)
+
+            CommNeighbors = snap.GetCmnNbrs(G_Campaign,NId_i,NId_j)
+            NeighborsUnion = float(len(list(set().union(getNeighbors(NId_i,G_Campaign),getNeighbors(NId_j,G_Campaign)))))
+
             Nbrs = snap.TIntV()
-            snap.GetCmnNbrs(G_Campaign, row['node_i'],row['node_j'], Nbrs)
-            #print row['node_i'], row['node_j']
+            snap.GetCmnNbrs(G_Campaign, NId_i,NId_j, Nbrs)
             for NId in Nbrs:
-                eid_i = G_Campaign.GetEId(NId,row['node_i'])
-                eid_j = G_Campaign.GetEId(NId,row['node_j'])
+                eid_i = G_Campaign.GetEId(NId,NId_i)
+                eid_j = G_Campaign.GetEId(NId,NId_j)
                 neighbors_i.append(NId)
                 neighbors_j.append(NId)
                 node_i_contribution_sum += G_Campaign.GetIntAttrDatE(eid_i, 'TRANSACTION_AMT')              
                 node_j_contribution_sum += G_Campaign.GetIntAttrDatE(eid_j, 'TRANSACTION_AMT')
-            
-            X['Contribution_Sum'][index] = node_i_contribution_sum + node_j_contribution_sum
-            X['Contribution_Diff'][index] = abs(node_i_contribution_sum - node_j_contribution_sum)
+                
+            result = {
+                'Degree_Diff':abs(G_Campaign.GetNI(NId_i).GetInDeg() - G_Campaign.GetNI(NId_j).GetInDeg()),
+                'Union_of_Neighbors': NeighborsUnion,
+                'CommNeighbors': CommNeighbors,
+                'Clustering_Coeff_Diff': abs(clustering_cf_i-clustering_cf_j),
+                'Clustering_Coeff_Sum': clustering_cf_i+clustering_cf_j,
+                'Clustering_Coeff_Avg': clustering_cf_i+clustering_cf_j/2.0,
+                'Contribution_Diff': abs(node_i_contribution_sum - node_j_contribution_sum),
+                'Contribution_Sum': node_i_contribution_sum + node_j_contribution_sum,
+                'Jaccard': CommNeighbors*1.0/NeighborsUnion,
+                'Shortest_Dist': snap.GetShortPath(G_Campaign, NId_i, NId_j),
+                'Deg_Centrality_Diff': abs(snap.GetDegreeCentr(G_Campaign_folded,NId_i) - snap.GetDegreeCentr(G_Campaign_folded,NId_j))
+            }
+        else:
+            result = {}
+        return pd.Series(result,name="Attri")
 
-    X['Jaccard'] = X['CommNeighbors'].astype(float)/X['Union_of_Neighbors'].astype(float)
-    
-    #print X['Jaccard']
-    X['Jaccard'].replace(np.inf,0.0)
-    X['Jaccard'] = X['Jaccard'].fillna(0.0)
+    X = X.apply(compute_attri, axis = 1)
+    print X
+    print "before dropping nan", X.shape
+    inds = pd.isnull(X).any(1).nonzero()[0]
 
-    print "-----    DONE    -----"
+    X =  X.drop(inds)
+    Y =  Y.drop(inds)
 
+    print "after dropping nan", X.shape
 
     return X, Y
 
@@ -213,50 +262,40 @@ def main():
     Main script for link prediction:
         1) a function that takes bill sponsorship data from one term of Congresss and returns a vector of Y
     '''
-    '''
-    
-    financial_data = pd.read_csv('processed-data/campaignNetworks_raw.csv')
-    bill_data = pd.read_csv('processed-data/legislator_bill_edge_list.csv')
-    financial_data = financial_data.rename(index=str, columns={"NodeID": "DstNId", "ComNodeId": "SrcNId"})
+    start_time = time.time()
 
-    
-    
-    G = common_function.getGraph(financial_data)
-    
-    legislator_node = bill_data['DstNId'].unique()
-
-    non_node = []
-    for i in legislator_node:
-        if G.IsNode(i) == False:
-            non_node.append(i)
-
-    print "total nodes", len(legislator_node)
-    print len(non_node)
-    '''
-    
-    
-    
     df = loadBillData(100) #get bill data for 100th congress
     #df = df.head(100)
     fin_df = loadFinancialData(1985,1986) #get financial data from two years prior
     #fin_df = fin_df.head(100)
+    
 
+    
     bill_node = df['SrcNId'].unique().tolist()
     legislator_node = df['DstNId'].unique().tolist()
     comm_node = fin_df['SrcNId'].unique().tolist()
 
-    legislator_node_from_campaign = fin_df['DstNId'].unique().tolist()
-
-    G_CoSponsor = getSponsorLink(df)
-
     G_Campaign = getCampaign(fin_df)
 
-    X, Y = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign)
+    legislator_node_from_campaign = fin_df['DstNId'].unique().tolist()
+    G_Campaign_folded = getCampaign_folded(G_Campaign,legislator_node_from_campaign)
+        
+    G_CoSponsor = getSponsorLink(df)
+    
+    snap.SaveEdgeList(G_Campaign, 'G_Campaign.txt')
+    snap.SaveEdgeList(G_Campaign_folded, 'G_Campaign_folded.txt')
+    snap.SaveEdgeList(G_CoSponsor, 'G_CoSponsor.txt')
+
+    
+    print "Get training"
+    X, Y = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign,G_Campaign_folded)
     
     X.to_csv('X.csv', index = False)
     Y.to_csv('Y.csv', index = False)
     
-    
+    print "My program took", time.time() - start_time, "to run train"
+
+    print "Get test"
     #---get test set ---#
     df = loadBillData(101) #get bill data for 101th congress
     fin_df = loadFinancialData(1987,1988) #get financial data from two years prior
@@ -265,19 +304,25 @@ def main():
     bill_node = df['SrcNId'].unique().tolist()
     legislator_node = df['DstNId'].unique().tolist()
     comm_node = fin_df['SrcNId'].unique().tolist()
-    legislator_node_from_campaign = fin_df['DstNId'].unique().tolist()
-
-    G_CoSponsor = getSponsorLink(df)
 
     G_Campaign = getCampaign(fin_df)
 
+    legislator_node_from_campaign = fin_df['DstNId'].unique().tolist()
+    G_Campaign_folded = getCampaign_folded(G_Campaign,legislator_node_from_campaign)
+        
+    G_CoSponsor = getSponsorLink(df)
+    
+    snap.SaveEdgeList(G_Campaign, 'G_Campaign.txt')
+    snap.SaveEdgeList(G_Campaign_folded, 'G_Campaign_folded.txt')
+    snap.SaveEdgeList(G_CoSponsor, 'G_CoSponsor.txt')
 
-    X_test, Y_test = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign)
+    X_test, Y_test = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign,G_Campaign_folded)
 
     X_test.to_csv('X_test.csv', index = False)
     Y_test.to_csv('Y_test.csv', index = False)
     
-    
+    print "My program took", time.time() - start_time, "to run test"
+
     print "-----BEGAN CLASSIFICATION-----"   
     X = pd.read_csv('X.csv')
     Y = pd.read_csv('Y.csv')
@@ -285,7 +330,7 @@ def main():
     X_test = pd.read_csv('X_test.csv')
     Y_test = pd.read_csv('Y_test.csv')
     
-    '''------GET BASELINE WITH PARTYLINE INFORMATION ONLY------'''
+    #------GET BASELINE WITH PARTYLINE INFORMATION ONLY------#
     party_df = loadParty('processed-data/candidate_node_mapping_manual_party.csv')
     getBaselineFeatures(X,Y,party_df)
 
@@ -307,12 +352,14 @@ def main():
     clf = getTree(X,Y)
     print clf.score(X_test,Y_test)
     
+    print "My program took", time.time() - start_time, "to run score"
+
     '''
     print "SVC"
     clf_svc = getSVC(X,Y)
     print clf_svc.score(X_test,Y_test)
     '''
-
+    
     pass
 
 

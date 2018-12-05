@@ -99,7 +99,7 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
 
     return X, Y
 
-def getXYFromEmb(bill_term,fin_start_year, fin_end_year):
+def getXYFromEmb(bill_term,fin_start_year, fin_end_year,p,q):
     df = link_prediction.loadBillData(bill_term) 
     fin_df = link_prediction.loadFinancialData(fin_start_year,fin_end_year) #get financial data from two years prior
     
@@ -116,8 +116,6 @@ def getXYFromEmb(bill_term,fin_start_year, fin_end_year):
     snap.SaveEdgeList(G_Campaign, "G_campaign.txt")
     #G_Campaign = snap.LoadEdgeList(snap.PUNGraph, "G_campaign.txt", 0, 1)
     
-    p = 1
-    q = 0.5
     walk_length = 80
     getEmbeddings("G_campaign.txt", p, q,walk_length)
     
@@ -138,10 +136,10 @@ def getXYFromEmb(bill_term,fin_start_year, fin_end_year):
 
 def main():
     '''
-    returns embedding for 100th congress
+    returns embedding for 100th congress using p = 1, q = 0.5
 
     '''
-    getXYFromEmb(100,1985, 1986)
+    getXYFromEmb(100,1985, 1986, 1, 0.5)
     return 
 
 
