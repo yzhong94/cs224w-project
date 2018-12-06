@@ -27,6 +27,7 @@ def loadFinancialData(start_year, end_year):
     For a given year range, load the financial data (candidate - committee) and a pd dataframe with 
     SrcNId: comm node #, DstNId: legislator node
     '''
+    #----Need to run ----#
     financial_data = pd.read_csv('processed-data/campaignNetworks_raw.csv')
     term_financial_data = financial_data[(financial_data['ContributionYear'] >= start_year) & (financial_data['ContributionYear'] <= end_year )]
 

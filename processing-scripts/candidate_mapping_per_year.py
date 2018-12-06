@@ -173,4 +173,4 @@ if __name__ == "__main__":
     print "G node count is %d" % (G.GetNodes())
     print "G edge count is %d" % (G.GetEdges())
 
-    snap.SaveEdgeList(G, "../processed-data/campaignNetworks_v2.txt", "Save 1981 to 2016 campaign network info as tab-separated list of edges, using unified candidate node IDs")
+    snap.SaveEdgeList(G, "../processed-data/campaignNetworks_raw.csv", "Save 1981 to 2016 campaign network info as tab-separated list of edges, using unified candidate node IDs")
