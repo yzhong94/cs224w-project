@@ -8,6 +8,9 @@ from sklearn.svm import SVC
 from sklearn import tree
 import networkx
 import time
+import sklearn
+import matplotlib.pyplot as plt
+from sklearn.feature_selection import SelectPercentile, f_classif
 
 def loadBillData(term):
     '''
@@ -35,10 +38,10 @@ def loadFinancialData(start_year, end_year):
 
 def loadParty(path):
     party_data = pd.read_csv(path)
-    print list(party_data)
+    #print list(party_data)
     party_data = party_data[['NodeID','Party']]
     party_data = party_data.drop_duplicates(subset = ['NodeID','Party'])
-    print party_data
+    #print party_data
     return party_data
 
 def getSponsorLink(df):
@@ -257,10 +260,22 @@ def getBaselineFeatures(X, Y, party_df):
     #X_base.to_csv('X_base.csv')
     return X, Y
 
+def plotGridSearch(scores,xlabel,ylabel,title,axis):
+    plt.plot(scores[:,0],scores[:,1])
+    plt.plot(scores[:,0],scores[:,2])
+    plt.legend(['training accuracy','testing accuracy'])
+    plt.title(title, fontsize=20)
+    plt.xlabel(xlabel, fontsize=18)
+    plt.ylabel(ylabel, fontsize=16)
+    plt.axis(axis)    
+    plt.show()
+    pass
+
 def main():
     '''
     Main script for link prediction:
         1) a function that takes bill sponsorship data from one term of Congresss and returns a vector of Y
+    '''
     '''
     start_time = time.time()
 
@@ -322,7 +337,7 @@ def main():
     Y_test.to_csv('Y_test.csv', index = False)
     
     print "My program took", time.time() - start_time, "to run test"
-
+    '''
     print "-----BEGAN CLASSIFICATION-----"   
     X = pd.read_csv('X.csv')
     Y = pd.read_csv('Y.csv')
@@ -332,13 +347,7 @@ def main():
     
     #------GET BASELINE WITH PARTYLINE INFORMATION ONLY------#
     party_df = loadParty('processed-data/candidate_node_mapping_manual_party.csv')
-    getBaselineFeatures(X,Y,party_df)
-
-    
-
-
-    X = X.drop(columns=['node_i','node_j'])
-    X_test = X_test.drop(columns=['node_i','node_j'])
+    #getBaselineFeatures(X,Y,party_df)
 
     print "baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
     Y = Y['result']
@@ -348,12 +357,52 @@ def main():
     clf = getlogistic(X,Y)
     print clf.score(X_test,Y_test)
 
+    selector = SelectPercentile(f_classif, percentile = 10)
+    selector.fit(X, Y)
+
+    Fval = []
+    [Fval.append((list(X)[i],selector.scores_[i],selector.pvalues_[i])) for i in range(len(list(X)))]
+
+    for i in Fval:
+        print i
+
+    #grid search for selectpercentile#
+    scores = []
+
+    for perc in range(5,80,5):
+        selector = SelectPercentile(f_classif, percentile = perc)
+        selector.fit(X, Y)
+        print "using selector with percentile ", perc
+        clf = getlogistic(selector.transform(X),Y)
+        print clf.score(selector.transform(X_test),Y_test)
+        scores.append((perc, clf.score(selector.transform(X),Y),clf.score(selector.transform(X_test),Y_test)))
+
+    print scores
+    scores = np.array(scores)
+
+    plotGridSearch(scores,'selector percentile','accuracy','Grid search for optimal selector percentile',[0,80,0.5,1])
+
     print "tree"
     clf = getTree(X,Y)
     print clf.score(X_test,Y_test)
+    '''
+    #grid search for tree
+    scores = []
+    for depth in range(1,50,5):
+        clf = tree.DecisionTreeClassifier(max_depth=depth)
+        clf = clf.fit(X, Y)
+        print clf.score(X,Y)
+        print clf.score(X_test,Y_test)
+        scores.append((depth, clf.score(X,Y),clf.score(X_test,Y_test)))
     
-    print "My program took", time.time() - start_time, "to run score"
+    scores = np.array(scores)
+    plotGridSearch(scores,'max depth for decision tree classifier','accuracy','Grid search for optimal max depth for decision tree classifier',[0,50,0.5,1])
 
+
+    '''
+    '''
+    print "My program took", time.time() - start_time, "to run score"
+    '''
     '''
     print "SVC"
     clf_svc = getSVC(X,Y)

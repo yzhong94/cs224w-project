@@ -20,52 +20,49 @@ def main():
     
     p = 1
     q = 2
-    accuracy=[]
-    for p in range(1,5,1):
-        for q in [x / 10.0 for x in range(1, 50, 5)]:
-            print "looping p",p
-            print "looping q",q
-            X, Y = node2vec_link_prediction_feature_extraction.getXYFromEmb(bill_term = 100,fin_start_year = 1985,fin_end_year = 1986,p = p,q = q)
-            X_test, Y_test = node2vec_link_prediction_feature_extraction.getXYFromEmb(bill_term = 101,fin_start_year = 1987,fin_end_year = 1988,p = p,q = q)
 
-            X.to_csv('X_emb.csv', index = False)
-            Y.to_csv('Y_emb.csv', index = False)
+    print "looping p",p
+    print "looping q",q
+    X, Y = node2vec_link_prediction_feature_extraction.getXYFromEmb(bill_term = 100,fin_start_year = 1985,fin_end_year = 1986,p = p,q = q)
+    X_test, Y_test = node2vec_link_prediction_feature_extraction.getXYFromEmb(bill_term = 101,fin_start_year = 1987,fin_end_year = 1988,p = p,q = q)
 
-            X_test.to_csv('X_test.csv', index = False)
-            Y_test.to_csv('Y_test.csv', index = False)
-            
-            X = pd.read_csv('X_emb.csv')
-            Y = pd.read_csv('Y_emb.csv')
+    X.to_csv('X_emb.csv', index = False)
+    Y.to_csv('Y_emb.csv', index = False)
 
-            X_test = pd.read_csv('X_test.csv')
-            Y_test = pd.read_csv('Y_test.csv')
-            
-            print "baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
-            Y = Y['result']
-            Y_test = Y_test['result']
+    X_test.to_csv('X_test.csv', index = False)
+    Y_test.to_csv('Y_test.csv', index = False)
+    
+    X = pd.read_csv('X_emb.csv')
+    Y = pd.read_csv('Y_emb.csv')
 
-            print X.describe()
-            print Y.describe()
-            inds = pd.isnull(X).any(1).nonzero()[0]
+    X_test = pd.read_csv('X_test.csv')
+    Y_test = pd.read_csv('Y_test.csv')
+    
+    print "baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
+    Y = Y['result']
+    Y_test = Y_test['result']
 
-            X =  X.drop(inds)
-            Y =  Y.drop(inds)
-            
-            inds = pd.isnull(X_test).any(1).nonzero()[0]
+    print X.describe()
+    print Y.describe()
+    inds = pd.isnull(X).any(1).nonzero()[0]
 
-            X_test =  X_test.drop(inds)
-            Y_test=  Y_test.drop(inds)
+    X =  X.drop(inds)
+    Y =  Y.drop(inds)
+    
+    inds = pd.isnull(X_test).any(1).nonzero()[0]
 
-            print "---with no feature selection---"
-            clf = link_prediction.getlogistic(X,Y)
-            print clf.score(X_test,Y_test)
-            
-            print "---with 20 perc select percentile---"
-            selector = SelectPercentile(f_classif, percentile=20)
-            selector.fit(X, Y)
-            clf = link_prediction.getlogistic(selector.transform(X),Y)
-            print clf.score(selector.transform(X_test),Y_test)
-            accuracy.append((p,q,clf.score(selector.transform(X_test),Y_test)))
+    X_test =  X_test.drop(inds)
+    Y_test=  Y_test.drop(inds)
+
+    print "---with no feature selection---"
+    clf = link_prediction.getlogistic(X,Y)
+    print clf.score(X_test,Y_test)
+    
+    print "---with 20 perc select percentile---"
+    selector = SelectPercentile(f_classif, percentile=20)
+    selector.fit(X, Y)
+    clf = link_prediction.getlogistic(selector.transform(X),Y)
+    print clf.score(selector.transform(X_test),Y_test)
 
     '''
     print "---with select percentile---"
