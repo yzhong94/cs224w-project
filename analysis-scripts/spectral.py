@@ -6,6 +6,8 @@ from matplotlib import pyplot as plt
 ### Input: campaign or bill graphs
 ### Output: +/- lable for each node on which cluster they belong to
 
+## TODO: this doesn't work yet, as HW implementation assumes consecutive 
+
 def load_graph(name):
     '''
     Helper function to load undirected graphs.
