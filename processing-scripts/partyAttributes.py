@@ -56,3 +56,4 @@ while CAM_YEAR <= 2016:
 
     CAM_YEAR = CAM_YEAR + 2
 
+df.to_csv("../processed-data/party_candidates_attributes.csv", index = False)
