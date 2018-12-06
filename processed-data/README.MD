@@ -1,4 +1,4 @@
-This folder hosts the processed data in the format of snap graph binary file.
+This folder hosts the processed data in the format of snap graph file.
 
 Files
 - a legislator_node.csv - a list containing all legislators using their thomas_id & bioguide_id with node attributes (state)

@@ -1,0 +1,15 @@
+This folder hosts the analysis script.
+- bill.py: Basic graph analysis on the bill/cosponsor network. Returns a weighted edgelist containing cosponsor data.
+- common_function.py: Contains useful functions used in other scripts for analysis.
+- describe.py: Graph description for cosponsor/campaign network
+- link_prediction: Script to run link prediction analysis, including:
+    - Compute node attributes
+    - Run ML to predict link
+    - Grid search for parameters
+    - Baseline: naive and model using candidate attributes
+- node2vec_link_prediction_analysis.py: Script to run ML on node2vec embeddings
+- node2vec_link_prediction_feature_extraction.py: Script to run node2vec walks and generate features
+- node2vec.py: From example implementation: https://github.com/snap-stanford/snap/tree/master/examples/node2vec
+- role.py: Script to analyze roles in graphs
+- spectral.py: Script to run spectral clustering for ML
+- loopThruEachYear.py: Script to run graph description script year over year
