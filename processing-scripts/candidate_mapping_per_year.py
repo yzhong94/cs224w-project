@@ -31,7 +31,7 @@ def loadCommMaster():
     filePath = "../data/financials/com_master/"
     allFiles = filePath + str(CAM_YEAR) + ".txt"
 
-    result = pd.concat(pd.read_csv(f, sep='|', index_col=False, 
+    result = pd.read_csv(f, sep='|', index_col=False, 
                  names=[
                  'CMTE_ID'
                  ,'CMTE_NM'
@@ -48,7 +48,7 @@ def loadCommMaster():
                  ,'ORG_TP'
                  ,'CONNECTED_ORG_NM'
                  ,'CAND_ID'
-                 ]) for f in allFiles)
+                 ])
 
     #result = result[['CMTE_ID','CMTE_NM', 'CMTE_ST', 'CMTE_TP', 'CMTE_PTY_AFFILIATION', 'CAND_ID']]
     result = result[['CMTE_ID']]
