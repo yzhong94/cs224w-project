@@ -11,6 +11,7 @@ import time
 import sklearn
 import matplotlib.pyplot as plt
 from sklearn.feature_selection import SelectPercentile, f_classif
+import baseline
 
 def loadBillData(term):
     '''
@@ -36,14 +37,6 @@ def loadFinancialData(start_year, end_year):
     term_financial_data = term_financial_data.rename(index=str, columns={"NodeID": "DstNId", "ComNodeId": "SrcNId"})
     print list(term_financial_data)
     return term_financial_data[['DstNId','SrcNId','TRANSACTION_AMT']]
-
-def loadParty(path):
-    party_data = pd.read_csv(path)
-    #print list(party_data)
-    party_data = party_data[['NodeID','Party']]
-    party_data = party_data.drop_duplicates(subset = ['NodeID','Party'])
-    #print party_data
-    return party_data
 
 def getSponsorLink(df):
     '''
@@ -99,23 +92,17 @@ def getCampaign_folded(G,legislator_node):
             
     return G_Campaign_folded
 
-def getY(G_CoSponsor,legislator_node):
+def getY(G_CoSponsor,legislator_node,legislator_node_from_campaign):
     '''
     return a 3D pd df (node i, node j, link_result)
     link result = 0 if no collaboration, link result = 1 if collaboration
     '''
     Y = []
     #print legislator_node
-    '''
-    for i in range(len(legislator_node)):
-        for j in range(i+1,len(legislator_node)):
-            if i != j:
-                result = G_CoSponsor.IsEdge(legislator_node[i],legislator_node[j])
-                if result:
-                    Y.append((legislator_node[i],legislator_node[j],1))
-                else:
-                    Y.append((legislator_node[i],legislator_node[j],-1))
-    '''
+    for l in legislator_node:
+        if l not in legislator_node_from_campaign:
+            legislator_node.remove(l)
+
     for i in range(len(legislator_node)):
         for j in range(i+1,len(legislator_node)):
             if i != j:
@@ -127,6 +114,7 @@ def getY(G_CoSponsor,legislator_node):
 
     labels = ['node_i', 'node_j', 'result']
     Y = pd.DataFrame.from_records(Y, columns=labels)
+    
 
     #print Y
     return Y
@@ -148,16 +136,8 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     '''
     return two pd: X, Y
     '''    
-    Y = getY(G_CoSponsor,legislator_node)
+    Y = getY(G_CoSponsor,legislator_node,legislator_node_from_campaign)
     print "before dropping", Y.shape
-    
-    for l in legislator_node:
-        if l not in legislator_node_from_campaign:
-            legislator_node.remove(l)
-    
-    Y = getY(G_CoSponsor,legislator_node)
-
-    print "after dropping", Y.shape
 
     X = Y[['node_i', 'node_j']]
 
@@ -274,15 +254,16 @@ def plotGridSearch(scores,xlabel,ylabel,title,axis):
 
 def main():
     '''
-    Main script for link prediction:
-        1) a function that takes bill sponsorship data from one term of Congresss and returns a vector of Y
+    Main script for link prediction
     '''
-    '''
+    term = 100
+    
     start_time = time.time()
 
-    df = loadBillData(100) #get bill data for 100th congress
+    df = loadBillData(term) #get bill data for 100th congress
     #df = df.head(100)
-    fin_df = loadFinancialData(1985,1986) #get financial data from two years prior
+    start_year, end_year = common_function.getTermMapping(term)
+    fin_df = loadFinancialData(start_year,end_year) #get financial data from two years prior
     #fin_df = fin_df.head(100)
     
 
@@ -310,11 +291,11 @@ def main():
     Y.to_csv('Y.csv', index = False)
     
     print "My program took", time.time() - start_time, "to run train"
-
+    '''
     print "Get test"
     #---get test set ---#
-    df = loadBillData(101) #get bill data for 101th congress
-    fin_df = loadFinancialData(1987,1988) #get financial data from two years prior
+    df = loadBillData(term+1s) #get bill data for 101th congress
+    fin_df = loadFinancialData(start_year+2,end_year+2) #get financial data from two years prior
     
     
     bill_node = df['SrcNId'].unique().tolist()
@@ -339,18 +320,21 @@ def main():
     
     print "My program took", time.time() - start_time, "to run test"
     '''
+    '''
     print "-----BEGAN CLASSIFICATION-----"   
     X = pd.read_csv('X.csv')
     Y = pd.read_csv('Y.csv')
 
     X_test = pd.read_csv('X_test.csv')
     Y_test = pd.read_csv('Y_test.csv')
-    
+    '''
     #------GET BASELINE WITH PARTYLINE INFORMATION ONLY------#
-    party_df = loadParty('processed-data/candidate_node_mapping_manual_party.csv')
-    #getBaselineFeatures(X,Y,party_df)
+    acc = baseline.getAttrBaseline(term,G_CoSponsor,legislator_node,legislator_node_from_campaign)
 
-    print "baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
+    '''
+    print "naive baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
+    
+    
     Y = Y['result']
     Y_test = Y_test['result']
 
@@ -386,6 +370,7 @@ def main():
     print "tree"
     clf = getTree(X,Y)
     print clf.score(X_test,Y_test)
+    '''
     '''
     #grid search for tree
     scores = []

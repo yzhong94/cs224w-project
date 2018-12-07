@@ -44,9 +44,6 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     num_dimensions = emb.shape[1] - 1 #from embedding
 
     node_id = emb[:,0]
-
-    Y = link_prediction.getY(G_CoSponsor,legislator_node)
-    print "before dropping", Y.shape
     
     for l in legislator_node:
         if l not in node_id:
@@ -56,10 +53,8 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
                 legislator_node.remove(l)
             except:
                 pass
-
-    print "after dropping", len(legislator_node)
     
-    Y = link_prediction.getY(G_CoSponsor,legislator_node)
+    Y = link_prediction.getY(G_CoSponsor,legislator_node,legislator_node_from_campaign)
 
     print "after dropping", Y.shape
     num_operation = 0
