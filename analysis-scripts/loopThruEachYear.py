@@ -204,7 +204,7 @@ while CAM_YEAR < 2016:
 	    for j in G_bill.Nodes():
 	        if (i.GetId() < j.GetId() and j.GetId() < 10000): #10000 is the upper limit for candidate nodes
 	            NbrV = snap.TIntV()
-				Num = snap.GetCmnNbrs(G_bill,i.GetId(),j.GetId())
+	            Num = snap.GetCmnNbrs(G_bill,i.GetId(),j.GetId())
             	#Num = snap.GetLen2Paths(G_bill, i.GetId(), j.GetId(), NbrV)
             	if Num != 0:
 	                if H_bill.IsNode(i.GetId()) == False:
