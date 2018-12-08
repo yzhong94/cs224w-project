@@ -270,14 +270,14 @@ def statsComm():
 if __name__ == "__main__":
     
     ## Functions to generate degree distribution plots
-    plotDeg("bill")
-    plotDeg("campaign")
+    #plotDeg("bill")
+    #plotDeg("campaign")
     #plotDegOverall()
 
     ## Functions to fold graphs
-    #projection("campaign") ## this will take very long
+    projection("campaign") ## this will take very long (720s)
     #B = foldBills()
     
     ## Functions to pull overall stats for node counts and edge counts
-    #combineGraphs()
-    #statsComm()
+    combineGraphs()
+    statsComm()
