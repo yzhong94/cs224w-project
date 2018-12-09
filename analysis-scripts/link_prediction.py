@@ -16,8 +16,8 @@ import baseline
 start_time = time.time()
 
 def loadClusteringAttr():
-    cluster_0 = pd.read_csv('processed-data/cluster_0.csv')
-    cluster_1 = pd.read_csv('processed-data/cluster_1.csv')
+    cluster_0 = pd.read_csv('../processed-data/cluster_0.csv')
+    cluster_1 = pd.read_csv('../processed-data/cluster_1.csv')
 
     return cluster_0['NodeId'].tolist(), cluster_1['NodeId'].tolist()
 
@@ -27,7 +27,7 @@ def loadBillData(term):
     SrcNId: bill node #, DstNId: legislator node
     Path: 'processed-data/legislator_bill_edge_list.csv'
     '''
-    legislator_bill = pd.read_csv('processed-data/legislator_bill_edge_list.csv')
+    legislator_bill = pd.read_csv('../processed-data/legislator_bill_edge_list.csv')
 
     term_legislator_bill = legislator_bill[legislator_bill['congress_term'] == term]
     return term_legislator_bill[['SrcNId','DstNId']]
@@ -39,7 +39,7 @@ def loadFinancialData(start_year, end_year):
     Path:'processed-data/campaignNetworks_raw_v2.csv'
     '''
     #----Need to run ----#
-    financial_data = pd.read_csv('processed-data/campaignNetworks_raw_v2.csv')
+    financial_data = pd.read_csv('../processed-data/campaignNetworks_raw_v2.csv')
     term_financial_data = financial_data[(financial_data['ContributionYear'] >= start_year) & (financial_data['ContributionYear'] <= end_year )]
 
     term_financial_data = term_financial_data.rename(index=str, columns={"NodeID": "DstNId", "ComNodeId": "SrcNId"})

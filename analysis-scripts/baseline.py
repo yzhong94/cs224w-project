@@ -8,7 +8,7 @@ import pandas as pd
 import common_function
 
 def getCandidateAttri(term):
-    df = pd.read_csv('processed-data/party_candidates_attributes.csv')
+    df = pd.read_csv('../processed-data/party_candidates_attributes.csv')
     start_year, end_year = common_function.getTermMapping(term)
 
     df = df[df['CAM_YEAR']>=start_year]
@@ -73,7 +73,9 @@ def getAttrBaseline(term,Y):
 
 def main():
 
-    pass
+    #pass
+
+    df = getCandidateAttri(102)
 
 if __name__ == "__main__":
     main()

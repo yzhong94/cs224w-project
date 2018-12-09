@@ -60,7 +60,7 @@ def getGraph(df):
     return G
 
 def getTermMapping(term):
-    mapping_df = pd.read_csv('processed-data/congress_term_year_mapping_ec.csv')
+    mapping_df = pd.read_csv('../processed-data/congress_term_year_mapping_ec.csv')
 
     start_year = mapping_df[mapping_df['Congress_term'] == term]['start_year'].values[0]
     end_year = mapping_df[mapping_df['Congress_term'] == term]['end_year'].values[0]
