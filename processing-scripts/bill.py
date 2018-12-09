@@ -96,21 +96,16 @@ def getGraph(legislator_bill_edge_list):
         G.AddEdge(SrcNId, DstNId)
     
     print "number of nodes", G.GetNodes()
-    print G.GetEdges()
+    print "number of edges", G.GetEdges()
 
     return G
 
 if __name__ == "__main__":
     df = loadData(input_path)
 
-    
-    #return bill_df.csv
-    #df.to_csv(output_path + "/bill_df.csv", index = False)
-    
     #return legislator_node.csv
     legislator_node = getLegislatorNode(df)
     legislator_node.to_csv(output_path + "/legislator_node.csv", index = False)
-
     
     #return bill_node.csv
     bill_node = getBillNode(df)

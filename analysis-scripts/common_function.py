@@ -69,7 +69,6 @@ def getTermMapping(term):
 def getCoSponsor(G, bill_node,legislator_node):
     '''
     returns the one mode projection graph of co-sponsorship
-
     '''
     CoSponsor = snap.TUNGraph.New()
 

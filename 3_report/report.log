@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  9 DEC 2018 22:11
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  9 DEC 2018 22:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -526,107 +526,107 @@ Underfull \hbox (badness 1360) in paragraph at lines 153--154
  []
 
 
-Overfull \hbox (17.58672pt too wide) detected at line 162
+Overfull \hbox (17.58672pt too wide) detected at line 161
 \OML/cmm/m/it/12 Accuracy \OT1/cmr/m/n/12 = []
  []
 
 
-Underfull \hbox (badness 3168) in paragraph at lines 171--172
+Underfull \hbox (badness 3168) in paragraph at lines 170--171
 []\OT1/cmr/m/n/12 Edges be-tween leg-is-la-tors and bills:
  []
 
 
-Underfull \hbox (badness 1917) in paragraph at lines 173--174
+Underfull \hbox (badness 1917) in paragraph at lines 172--173
 []\OT1/cmr/m/n/12 Overall tri-par-tite graph node count:
  []
 
 <overall_deg_distro.png, id=135, 578.16pt x 433.62pt>
 File: overall_deg_distro.png Graphic file (type png)
  <use overall_deg_distro.png>
-Package pdftex.def Info: overall_deg_distro.png used on input line 183.
+Package pdftex.def Info: overall_deg_distro.png used on input line 182.
 (pdftex.def)             Requested size: 114.93875pt x 86.19975pt.
  <candidate_in_bill_deg_distro.png, id=138, 578.16pt x 433.62pt>
 File: candidate_in_bill_deg_distro.png Graphic file (type png)
  <use candidate_in_bill_deg_distro.png>
-Package pdftex.def Info: candidate_in_bill_deg_distro.png used on input line 194.
+Package pdftex.def Info: candidate_in_bill_deg_distro.png used on input line 193.
 (pdftex.def)             Requested size: 103.44417pt x 77.57846pt.
 
-Underfull \hbox (badness 2401) in paragraph at lines 195--195
+Underfull \hbox (badness 2401) in paragraph at lines 194--194
 []\OT1/cmr/m/n/12 Figure 3: []Degree
  []
 
 <candidate_in_campaign_deg_distro.png, id=139, 578.16pt x 433.62pt>
 File: candidate_in_campaign_deg_distro.png Graphic file (type png)
  <use candidate_in_campaign_deg_distro.png>
-Package pdftex.def Info: candidate_in_campaign_deg_distro.png used on input line 200.
+Package pdftex.def Info: candidate_in_campaign_deg_distro.png used on input line 199.
 (pdftex.def)             Requested size: 103.44417pt x 77.57846pt.
 
-Underfull \hbox (badness 2401) in paragraph at lines 201--201
+Underfull \hbox (badness 2401) in paragraph at lines 200--200
 []\OT1/cmr/m/n/12 Figure 4: []Degree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 201--201
+Underfull \hbox (badness 10000) in paragraph at lines 200--200
 \OT1/cmr/m/n/12 Dis-tri-bu-tion of
  []
 
 
-Underfull \hbox (badness 1769) in paragraph at lines 201--201
+Underfull \hbox (badness 1769) in paragraph at lines 200--200
 \OT1/cmr/m/n/12 graph on a lin-ear
  []
 
 [7] <bill_role.png, id=153, 578.16pt x 433.62pt>
 File: bill_role.png Graphic file (type png)
  <use bill_role.png>
-Package pdftex.def Info: bill_role.png used on input line 214.
+Package pdftex.def Info: bill_role.png used on input line 213.
 (pdftex.def)             Requested size: 103.44417pt x 77.57846pt.
  <campaign_role.png, id=154, 578.16pt x 433.62pt>
 File: campaign_role.png Graphic file (type png)
  <use campaign_role.png>
-Package pdftex.def Info: campaign_role.png used on input line 220.
+Package pdftex.def Info: campaign_role.png used on input line 219.
 (pdftex.def)             Requested size: 103.44417pt x 77.57846pt.
  [8 <./overall_deg_distro.png> <./candidate_in_bill_deg_distro.png> <./candidate_in_campaign_deg_distro.png> <./bill_role.png> <./campaign_role.png>] <2000_bill_degrees_log.png, id=168, 393.47pt x 283.0575pt>
 File: 2000_bill_degrees_log.png Graphic file (type png)
  <use 2000_bill_degrees_log.png>
-Package pdftex.def Info: 2000_bill_degrees_log.png used on input line 238.
+Package pdftex.def Info: 2000_bill_degrees_log.png used on input line 237.
 (pdftex.def)             Requested size: 103.44417pt x 74.41383pt.
 
-Underfull \hbox (badness 1845) in paragraph at lines 239--239
+Underfull \hbox (badness 1845) in paragraph at lines 238--238
 \OT1/cmr/m/n/12 graph De-gree Dis-
  []
 
 
-Underfull \hbox (badness 2680) in paragraph at lines 239--239
+Underfull \hbox (badness 2680) in paragraph at lines 238--238
 \OT1/cmr/m/n/12 tri-bu-tion (log) for
  []
 
 <2000_campaign_degrees_log.png, id=169, 393.47pt x 283.0575pt>
 File: 2000_campaign_degrees_log.png Graphic file (type png)
  <use 2000_campaign_degrees_log.png>
-Package pdftex.def Info: 2000_campaign_degrees_log.png used on input line 244.
+Package pdftex.def Info: 2000_campaign_degrees_log.png used on input line 243.
 (pdftex.def)             Requested size: 103.44417pt x 74.41383pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 245--245
+Underfull \hbox (badness 10000) in paragraph at lines 244--244
 \OT1/cmr/m/n/12 Sub-graph De-gree
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 245--245
+Underfull \hbox (badness 10000) in paragraph at lines 244--244
 \OT1/cmr/m/n/12 Dis-tri-bu-tion (log)
  []
 
 <selector_percentile_grid_search.png, id=172, 578.16pt x 433.62pt>
 File: selector_percentile_grid_search.png Graphic file (type png)
  <use selector_percentile_grid_search.png>
-Package pdftex.def Info: selector_percentile_grid_search.png used on input line 275.
+Package pdftex.def Info: selector_percentile_grid_search.png used on input line 274.
 (pdftex.def)             Requested size: 160.91354pt x 120.68495pt.
  [9 <./2000_bill_degrees_log.png> <./2000_campaign_degrees_log.png>] <max_depth_grid.png, id=184, 578.16pt x 433.62pt>
 File: max_depth_grid.png Graphic file (type png)
  <use max_depth_grid.png>
-Package pdftex.def Info: max_depth_grid.png used on input line 288.
+Package pdftex.def Info: max_depth_grid.png used on input line 287.
 (pdftex.def)             Requested size: 160.91354pt x 120.68495pt.
 
-Underfull \hbox (badness 3780) in paragraph at lines 294--295
+Underfull \hbox (badness 3780) in paragraph at lines 293--294
 \OT1/cmr/m/n/12 leg-is-la-tors via com-mon donors and co-
  []
 
@@ -641,17 +641,17 @@ Underfull \hbox (badness 2277) in paragraph at lines 46--48
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 310.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 309.
  [11
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 310.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 309.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 310.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 310.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 309.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 309.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 6FC729BE4D1BEDB3F2C27DB7F48436EA;1031.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 310.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 309.
  ) 
 Here is how much of TeX's memory you used:
  7018 strings out of 492995

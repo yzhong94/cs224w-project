@@ -56,14 +56,12 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     
     Y = link_prediction.getY(G_CoSponsor,legislator_node)
 
-    print "after dropping", Y.shape
     num_operation = 0
     X = Y[['node_i', 'node_j']]
     for i in range(num_dimensions*total_num_operations):
         X[str(i)] = 0.0
 
     X['distance'] = 0.0
-    print X.head(1)
 
 
     def compute_attri(x): 
@@ -89,7 +87,6 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
 
         return pd.Series(result,name="Attri")
     
-    #X.head(50)
     X = X.apply(compute_attri, axis = 1)
 
     return X, Y
@@ -113,10 +110,7 @@ def getXYFromEmb(bill_term,fin_start_year, fin_end_year,p,q):
     
     walk_length = 80
     getEmbeddings("G_campaign.txt", p, q,walk_length)
-    
-
-    print G_Campaign.GetNodes()
-    
+        
     emb = np.loadtxt('embedding.emb', skiprows = 1)
     node_id = emb[:,0]
 

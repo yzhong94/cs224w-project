@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex report"] 1544364666 "report.aux" "report.bbl" "report" 1544364711
+["bibtex report"] 1544364666 "report.aux" "report.bbl" "report" 1544364846
   "/usr/local/texlive/2017/texmf-dist/bibtex/bst/base/plain.bst" 1480098433 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "ref.bib" 1544321154 3032 583cabf681754ffc17d31ac094ef7d07 ""
-  "report.aux" 1544364711 5091 5425d8f04cc73f93ba5ec5f61d717e33 ""
+  "report.aux" 1544364846 5091 5425d8f04cc73f93ba5ec5f61d717e33 ""
   (generated)
-  "report.blg"
   "report.bbl"
-["pdflatex"] 1544364710 "/Users/yizhong/Documents/cs224w-project/3_report/report.tex" "report.pdf" "report" 1544364711
-  "/Users/yizhong/Documents/cs224w-project/3_report/report.tex" 1544364710 33142 989253964e2fb2125e8769091b1f6055 ""
+  "report.blg"
+["pdflatex"] 1544364845 "/Users/yizhong/Documents/cs224w-project/3_report/report.tex" "report.pdf" "report" 1544364846
+  "/Users/yizhong/Documents/cs224w-project/3_report/report.tex" 1544364844 33141 77e41300dfeb3dfca972e33909489bd0 ""
   "/usr/local/texlive/2017/texmf-dist/fonts/map/fontname/texfonts.map" 1480098670 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2017/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1480098698 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -102,13 +102,13 @@
   "max_depth_grid.png" 1544321154 48008 b7ce79f7b767c75e220dfe6b196a210a ""
   "network_illustration2.png" 1544321154 125240 1091e7f036383f6ba5692f38b884ce86 ""
   "overall_deg_distro.png" 1544321154 38117 e03ba25f8e4a4d53a4876c412fd0be60 ""
-  "report.aux" 1544364711 5091 5425d8f04cc73f93ba5ec5f61d717e33 ""
+  "report.aux" 1544364846 5091 5425d8f04cc73f93ba5ec5f61d717e33 ""
   "report.bbl" 1544364666 1865 2ccfe5a0447e1bd249210984ffb11e8a "bibtex report"
-  "report.out" 1544364711 1031 6fc729be4d1bedb3f2c27db7f48436ea ""
-  "report.tex" 1544364710 33142 989253964e2fb2125e8769091b1f6055 ""
+  "report.out" 1544364846 1031 6fc729be4d1bedb3f2c27db7f48436ea ""
+  "report.tex" 1544364844 33141 77e41300dfeb3dfca972e33909489bd0 ""
   "selector_percentile_grid_search.png" 1544321154 37090 c8868fdfa6252ce7447c9a389c478549 ""
   (generated)
-  "report.pdf"
   "report.out"
-  "report.aux"
   "report.log"
+  "report.aux"
+  "report.pdf"

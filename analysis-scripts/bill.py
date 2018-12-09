@@ -9,41 +9,13 @@ import networkx as nx
 def readGraph(path):
     G = snap.LoadEdgeList(snap.PUNGraph, path, 0, 1)
     return G
-'''
-def readNX(path):
-    
-    path to csv for graph
-    SrcNId: bill number
-    DstNId: legislator number
-    bipartite = 1: bill number
-    bipartite = 0: legislator number
-    
-    df = pd.read_csv(path)
 
-    #df = df.head(5000)
-
-    G = nx.from_pandas_edgelist(df, 'SrcNId', 'DstNId', ['date_signed', 'congress_term'])
-    
-    bill_node = df['SrcNId'].unique().tolist()
-    legislator_node = df['DstNId'].unique().tolist()
-
-    for i in [n for n in G if n in legislator_node]:
-        G.nodes[i]['bipartite'] = 0
-    for i in [n for n in G if n in bill_node]:
-        G.nodes[i]['bipartite'] = 1
-
-    return G
-'''
 def graphAnalysis(G, bill_node, legislator_node):
     '''
     basic function to get some data about the graph for legislators and for bills:
     - clustering coefficient
     - degree distribution
     '''
-    print legislator_node.shape
-    
-    print list(legislator_node)
-
     legislator_dis = []
     bill_dis = []
 
@@ -85,8 +57,6 @@ def getCoSponsor(G, bill_node,legislator_node):
                 if CoSponsor.IsEdge(legislator_node['NId'][i],legislator_node['NId'][j]) == False:
                     CoSponsor.AddEdge(legislator_node['NId'][i],legislator_node['NId'][j]) 
 
-    #snap.SaveEdgeList(CoSponsor, 'cosponsor.txt')
-
     return CoSponsor
     
 
@@ -96,12 +66,10 @@ def cosponsorGraphAnalysis(CoSponsor):
     print "Number of nodes -" , CoSponsor.GetNodes()
     print "Average clustering coefficient", snap.GetClustCf(CoSponsor)
     
-    
     result = snap.GetTriadsAll(CoSponsor)
     print "Number of closed triads", result[0]
     print "Number of open triads", result[2]
     
-
     pass
 
 
@@ -112,10 +80,13 @@ def getCoSponsorNX(G,bill_nodes,legislator_nodes):
     return G
 
 if __name__ == "__main__":
+    '''
+    takes legislator_bill_edge_list generated from ../processing-scripts/bill.py
+    '''
 
     #SrcNId = 1: bill number
     #DstNId = 0 : legislator number
-    G = common_function.readNX('processed-data/legislator_bill_edge_list.csv')
+    G = common_function.readNX('../processed-data/legislator_bill_edge_list.csv')
 
     #bipartite = 1: bill number
     #bipartite = 0: legislator number
@@ -126,14 +97,14 @@ if __name__ == "__main__":
 
     nx.readwrite.edgelist.write_weighted_edgelist(CoSponsor, 'processed-data/CoSponsor_Weighted')
 
-    '''
-    G = readGraph("processed-data/legislator_bill_edge_list_graph.txt")
-    bill_node = pd.read_csv('processed-data/bill_node.csv')
-    legislator_node = pd.read_csv('processed-data/legislator_node.csv')
+    
+    G = readGraph("../processed-data/legislator_bill_edge_list_graph.txt")
+    bill_node = pd.read_csv('../processed-data/bill_node.csv')
+    legislator_node = pd.read_csv('../processed-data/legislator_node.csv')
 
-    #graphAnalysis(G,bill_node,legislator_node)
+    graphAnalysis(G,bill_node,legislator_node)
 
     CoSponsor = getCoSponsor(G,bill_node,legislator_node)
-    #CoSponsor = readGraph("processed-data/cosponsor.txt")
-    #cosponsorGraphAnalysis(CoSponsor)
-    '''
+    CoSponsor = readGraph("../processed-data/cosponsor.txt")
+    cosponsorGraphAnalysis(CoSponsor)
+    
