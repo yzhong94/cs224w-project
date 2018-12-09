@@ -56,4 +56,8 @@ while CAM_YEAR <= 2016:
 
     CAM_YEAR = CAM_YEAR + 2
 
-df.to_csv("../processed-data/party_candidates_attributes.csv", index = False)
+## processing master data
+result = df[['NodeID','CAM_YEAR', 'state_y', 'CAND_PTY_AFFILIATION']]
+result = result.drop_duplicates()
+
+result.to_csv("../processed-data/party_candidates_attributes.csv", index = False)

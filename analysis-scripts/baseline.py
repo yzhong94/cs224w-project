@@ -14,15 +14,21 @@ def getCandidateAttri(term):
     df = df[df['CAM_YEAR']>=start_year]
     df = df[df['CAM_YEAR']<=end_year]
     print list(df)
-    df = df.groupby(['NodeID','state_y','CAND_PTY_AFFILIATION']).size().reset_index(name='Freq')
-    #print df
-    return df
+    df = df[df.state_y != '']
+    df = df[df.CAND_PTY_AFFILIATION != '']
+
+    #df = df[['NodeID','state_y', 'CAND_PTY_AFFILIATION']] ## ,'state_x'  state_x is whether house or senate or presidential
+
+    result = df.groupby('NodeID', as_index=False).first() ## for dedupe
+
+    return result
 
 def getAttrBaseline(term,Y):
     cand_df = getCandidateAttri(term)
     accuracy = 0
 
     X = Y[['node_i', 'node_j']]
+    print X.head()
     print list(Y)
 
 
@@ -54,28 +60,36 @@ def getAttrBaseline(term,Y):
     print X.shape
     X = X.merge(cand_df,left_on = "node_i",right_on = "NodeID",how = "left")
     X = X.merge(cand_df,left_on = "node_j",right_on = "NodeID",how = "left")
+    X = X.fillna(0)
     print X.shape
+    print X.head()
     X['fromSameParty'] = ''
-    X['fromSameState'] = ''
+    #X['fromSameState'] = ''
     print X[X['CAND_PTY_AFFILIATION_y'] == X['CAND_PTY_AFFILIATION_x']].shape
     
     X['fromSameParty'][X['CAND_PTY_AFFILIATION_y'] == X['CAND_PTY_AFFILIATION_x']] = 1
     X['fromSameParty'][X['CAND_PTY_AFFILIATION_y'] != X['CAND_PTY_AFFILIATION_x']] = 0
 
-    X['fromSameState'][X['state_y_y'] == X['state_y_x']] = 1
-    X['fromSameState'][X['state_y_y'] != X['state_y_x']] = 0
+    #X['fromSameState'][X['state_y_y'] == X['state_y_x']] = 1
+    #X['fromSameState'][X['state_y_y'] != X['state_y_x']] = 0
+
 
 
     Y = Y[['result']]
-    X = X[['fromSameState','fromSameParty']]
+    #X = X[['fromSameState','fromSameParty']]
+    X = X[['fromSameParty']]
+    print X.head()
+
     return X, Y
 
 
 def main():
 
-    #pass
-
-    df = getCandidateAttri(102)
+    pass
+    #df = getCandidateAttri(101)
+    #print df.head()
+    #print df.shape
+    #print df['NodeID'].unique().shape
 
 if __name__ == "__main__":
     main()
