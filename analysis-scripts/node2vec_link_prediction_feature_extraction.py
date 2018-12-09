@@ -54,7 +54,7 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
             except:
                 pass
     
-    Y = link_prediction.getY(G_CoSponsor,legislator_node,legislator_node_from_campaign)
+    Y = link_prediction.getY(G_CoSponsor,legislator_node)
 
     print "after dropping", Y.shape
     num_operation = 0

@@ -15,6 +15,11 @@ import baseline
 
 start_time = time.time()
 
+def loadClusteringAttr():
+    cluster_0 = pd.read_csv('processed-data/cluster_0.csv')
+    cluster_1 = pd.read_csv('processed-data/cluster_1.csv')
+
+    return cluster_0['NodeId'].tolist(), cluster_1['NodeId'].tolist()
 
 def loadBillData(term):
     '''
@@ -146,13 +151,14 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
             except:
                 pass
     
+    cluster_0, cluster_1 = loadClusteringAttr()
     print "after dropping",len(legislator_node)
  
     Y = getY(G_CoSponsor,legislator_node)
 
     #compute a list of clustering coefficient
     NIdCCfH = snap.TIntFltH()
-    snap.GetNodeClustCf(G_Campaign, NIdCCfH)
+    snap.GetNodeClustCf(G_Campaign_folded, NIdCCfH)
 
     #compute a list of node centrality and degree
     node_centrality={}
@@ -178,6 +184,7 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     X['Jaccard'] = 0.0
     X['Shortest_Dist'] = 0.0
     X['Deg_Centrality_Diff'] = 0.0
+    X['FromSameCluster'] = 0
 
 
     def compute_attri(x):
@@ -190,10 +197,17 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
             neighbors_j = []
 
             clustering_cf_i = NIdCCfH[NId_i]
-            clustering_cf_j = NIdCCfH[NId_j]
 
+            clustering_cf_j = NIdCCfH[NId_j]
+        
             CommNeighbors = snap.GetCmnNbrs(G_Campaign,NId_i,NId_j)
             NeighborsUnion = float(len(list(set().union(getNeighbors(NId_i,G_Campaign),getNeighbors(NId_j,G_Campaign)))))
+
+            FromSameCluster = 0
+            if NId_i in cluster_0 and NId_j in cluster_0:
+                FromSameCluster = 1
+            if NId_i in cluster_1 and NId_j in cluster_1:
+                FromSameCluster = 1
             '''
             Nbrs = snap.TIntV()
             snap.GetCmnNbrs(G_Campaign, NId_i,NId_j, Nbrs)
@@ -216,7 +230,8 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
                 #'Contribution_Sum': node_i_contribution_sum + node_j_contribution_sum,
                 'Jaccard': CommNeighbors*1.0/NeighborsUnion,
                 'Shortest_Dist': snap.GetShortPath(G_Campaign, NId_i, NId_j),
-                'Deg_Centrality_Diff': abs(node_centrality[NId_i] - node_centrality[NId_j])
+                'Deg_Centrality_Diff': abs(node_centrality[NId_i] - node_centrality[NId_j]),
+                'FromSameCluster': FromSameCluster
             }
         else:
             result = {}
@@ -241,7 +256,7 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     return X, Y
 
 def getlogistic(X, Y):
-    clf = LogisticRegression(random_state=0, solver='lbfgs', multi_class='ovr').fit(X, Y)
+    clf = LogisticRegression(random_state=0, solver='lbfgs', multi_class='ovr',max_iter = 10000000).fit(X, Y)
 
     clf.predict(X)
     print clf.score(X, Y)
@@ -286,32 +301,31 @@ def getFeaturesForTerm(term):
 
     
     G_Campaign = getCampaign(fin_df)
-    '''
+    
     G_CoSponsor = getSponsorLink(df)
     G_Campaign_folded = getCampaign_folded(G_Campaign,legislator_node_from_campaign)
-        
+    '''
     snap.SaveEdgeList(G_Campaign, 'G_Campaign.txt')
     snap.SaveEdgeList(G_Campaign_folded, 'G_Campaign_folded.txt')
     snap.SaveEdgeList(G_CoSponsor, 'G_CoSponsor.txt')
-    '''
+    
     G_Campaign_folded = snap.LoadEdgeList(snap.PUNGraph, 'G_Campaign_folded.txt',0,1)
     G_CoSponsor = snap.LoadEdgeList(snap.PUNGraph, 'G_CoSponsor.txt',0,1)
-
-    X, Y = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign,G_Campaign_folded)
-    
-    X.to_csv('X.csv', index = False)
-    Y.to_csv('Y.csv', index = False)
+    '''
+    X, Y = getFeatures(G_CoSponsor,G_Campaign,bill_node, legislator_node, comm_node,legislator_node_from_campaign,G_Campaign_folded) 
+    X['term'] = term
     return X, Y
 
 def main():
     '''
     Main script for link prediction
     '''
+    
     print "-----LIMITED SAMPLES: 100TH AND 101ST CONGRESS-----"
     print "-----BEGIN EXTRACTING FEATURES-----"
+    '''
     term = 100
     
-    '''
     X,Y = getFeaturesForTerm(term)
 
     X.to_csv('X.csv', index = False)
@@ -319,38 +333,86 @@ def main():
     
     print "My program took", time.time() - start_time, "to run train"
     
-    X_test,Y_test = getFeaturesForTerm(term)
+    X_test,Y_test = getFeaturesForTerm(term+1)
     X_test.to_csv('X_test.csv', index = False)
     Y_test.to_csv('Y_test.csv', index = False)
     
     print "My program took", time.time() - start_time, "to run test"
     '''
+    '''
     
-    print "-----BEGAN CLASSIFICATION-----"   
+    print "-----ALL SAMPLES: 98th-112th-----"
+    print "-----BEGIN EXTRACTING FEATURES-----"
+    
+    X_all,Y_all = getFeaturesForTerm(98)
+
+    for term in range(99,112,1):
+        print "looping term", term
+        X,Y = getFeaturesForTerm(term)
+        X_all = pd.concat([X_all,X],ignore_index=True)
+        Y_all = pd.concat([Y_all,Y],ignore_index=True)
+        X_all.to_csv('X_all.csv', index = False)
+        Y_all.to_csv('Y_all.csv', index = False)
+    
+
+    print "My program took", time.time() - start_time, "to run train"
+    
+    X_test_113,Y_test_113 = getFeaturesForTerm(113)
+    X_test_114,Y_test_114 = getFeaturesForTerm(114)
+
+    X_test_all = pd.concat([X_test_113,X_test_114],ignore_index=True)
+    Y_test_all = pd.concat([Y_test_113,Y_test_114],ignore_index=True)
+
+    X_test_all.to_csv('X_test_all.csv', index = False)
+    Y_test_all.to_csv('Y_test_all.csv', index = False)
+    
+    print "My program took", time.time() - start_time, "to run test"
+
+    '''
+    print "-----BEGAN CLASSIFICATION-----" 
+    print "-----LIMITED SAMPLES-----" 
+    '''
     X = pd.read_csv('X.csv')
     Y = pd.read_csv('Y.csv')
 
     X_test = pd.read_csv('X_test.csv')
     Y_test = pd.read_csv('Y_test.csv')
-    
+    '''
+    print "-----ALL SAMPLES-----"    
+    X = pd.read_csv('X_all.csv')
+    Y = pd.read_csv('Y_all.csv')
+
+    X_test = pd.read_csv('X_test_all.csv')
+    Y_test = pd.read_csv('Y_test_all.csv')
+    #Y_test = Y_test[X_test['term']==113]
+    #X_test = X_test[X_test['term']==113]
+
+
+    '''
     #------GET BASELINE WITH PARTYLINE INFORMATION ONLY------#
     print "My program took", time.time() - start_time, "to begin baseline"
 
-    acc = baseline.getAttrBaseline(term,Y_test)
-    
+    X_base_train, Y_base_train = baseline.getAttrBaseline(term,Y)
+    X_base_test, Y_base_test = baseline.getAttrBaseline(term,Y_test)
     print "My program took", time.time() - start_time, "to end baseline"
 
+    print "logistic baseline"
+    clf = getlogistic(X_base_train,Y_base_train)
+    print clf.score(X_base_test,Y_base_test)
+    
     '''
     print "naive baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
     
     
     Y = Y['result']
     Y_test = Y_test['result']
-
+    
     print "logistic"
     clf = getlogistic(X,Y)
     print clf.score(X_test,Y_test)
 
+    
+    
     selector = SelectPercentile(f_classif, percentile = 10)
     selector.fit(X, Y)
 
@@ -359,11 +421,11 @@ def main():
 
     for i in Fval:
         print i
-
+    '''
     #grid search for selectpercentile#
     scores = []
 
-    for perc in range(5,80,5):
+    for perc in range(5,100,5):
         selector = SelectPercentile(f_classif, percentile = perc)
         selector.fit(X, Y)
         print "using selector with percentile ", perc
@@ -371,21 +433,22 @@ def main():
         print clf.score(selector.transform(X_test),Y_test)
         scores.append((perc, clf.score(selector.transform(X),Y),clf.score(selector.transform(X_test),Y_test)))
 
-    print scores
     scores = np.array(scores)
-
+    
     plotGridSearch(scores,'selector percentile','accuracy','Grid search for optimal selector percentile',[0,80,0.5,1])
-
+    '''
+    
     print "tree"
     clf = getTree(X,Y)
     print clf.score(X_test,Y_test)
-    '''
+
     '''
     #grid search for tree
     scores = []
     for depth in range(1,50,5):
         clf = tree.DecisionTreeClassifier(max_depth=depth)
         clf = clf.fit(X, Y)
+        print depth
         print clf.score(X,Y)
         print clf.score(X_test,Y_test)
         scores.append((depth, clf.score(X,Y),clf.score(X_test,Y_test)))
@@ -393,11 +456,9 @@ def main():
     scores = np.array(scores)
     plotGridSearch(scores,'max depth for decision tree classifier','accuracy','Grid search for optimal max depth for decision tree classifier',[0,50,0.5,1])
 
-
     '''
-    '''
+    
     print "My program took", time.time() - start_time, "to run score"
-    '''
     '''
     print "SVC"
     clf_svc = getSVC(X,Y)

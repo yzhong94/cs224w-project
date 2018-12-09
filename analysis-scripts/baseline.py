@@ -51,8 +51,10 @@ def getAttrBaseline(term,Y):
     X = X.apply(compute_attri, axis = 1)
     print X
     '''
+    print X.shape
     X = X.merge(cand_df,left_on = "node_i",right_on = "NodeID",how = "left")
     X = X.merge(cand_df,left_on = "node_j",right_on = "NodeID",how = "left")
+    print X.shape
     X['fromSameParty'] = ''
     X['fromSameState'] = ''
     print X[X['CAND_PTY_AFFILIATION_y'] == X['CAND_PTY_AFFILIATION_x']].shape
@@ -63,8 +65,9 @@ def getAttrBaseline(term,Y):
     X['fromSameState'][X['state_y_y'] == X['state_y_x']] = 1
     X['fromSameState'][X['state_y_y'] != X['state_y_x']] = 0
 
-    X.to_csv('test.csv')
 
+    Y = Y[['result']]
+    X = X[['fromSameState','fromSameParty']]
     return X, Y
 
 

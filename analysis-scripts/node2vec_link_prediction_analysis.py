@@ -29,14 +29,14 @@ def main():
     X.to_csv('X_emb.csv', index = False)
     Y.to_csv('Y_emb.csv', index = False)
 
-    X_test.to_csv('X_test.csv', index = False)
-    Y_test.to_csv('Y_test.csv', index = False)
+    X_test.to_csv('X_test_node.csv', index = False)
+    Y_test.to_csv('Y_test_node.csv', index = False)
     
     X = pd.read_csv('X_emb.csv')
     Y = pd.read_csv('Y_emb.csv')
 
-    X_test = pd.read_csv('X_test.csv')
-    Y_test = pd.read_csv('Y_test.csv')
+    X_test = pd.read_csv('X_test_node.csv')
+    Y_test = pd.read_csv('Y_test_node.csv')
     
     print "baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
     Y = Y['result']
