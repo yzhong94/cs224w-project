@@ -34,7 +34,7 @@
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-We combined the campaign contribution records and congressional bill co-sponsorship data to contruct a tri-partite graph, in order to model the money politics in the US Congress. We found that the US Congressional Politcs is indeed a small world with collaboration resembling academic collaborations. More importantly, we modeled the bill co-sponsorship prediction as a link prediction problem, using legislator node attributes learned from campaign contribution networks. Result shows that using campaign networks is a good way to predict future in-office collaboration between legislators, especially with a supervised, decision-tree model. 
+We combined the campaign contribution records and congressional bill co-sponsorship data to construct a tri-partite graph, in order to model the money politics in the US Congress. We found that the US Congressional Politics is indeed a small world with collaboration resembling academic collaborations. More importantly, we modeled the bill co-sponsorship prediction as a link prediction problem, using legislator node attributes learned from campaign contribution networks. Result shows that using campaign networks is a good way to predict future in-office collaboration between legislators, especially with a supervised, decision-tree model. 
 \end{abstract}
 \section{Introduction}
 Political collaboration is an important part of legislative life, and congress bill cosponsorships provide a rich source of information about the social network between legislators \cite{fowler2006connecting}, and serving as a proxy to understand legislators' "connectedness" and collaboration graph. Moreover, according to Mark Twain, "we have the best government that money can buy" - money and politics have already been intertwined. In this project, we applied social network analysis tools on political donation networks and congress bill cosponsorship networks, and framed our research problem as a link prediction task on congress bill cosponsorship networks using political campaign donation records for the US (Congress and Presidential Campaigns) with its network characteristics. We modeled and presented graph characteristics of the two political networks, and showed investigation results of link prediction using various supervised learning techniques for this project. We then compared models' performance to a naive baseline to come up with evaluations. 
@@ -74,7 +74,7 @@ Our project is made up of two parts: graph modeling, and link prediction. For gr
 
 Practically, we hope our research can quantitatively answer the question: \textbf{Does donation in election affect collaboration in office?} Given a graph of congressional politicians and their campaign donations, we want to predict who will co-sponsor bills together as a form of political collaboration. Here we focus on congressional bill (including all resolutions, bills, and amendments) co-sponsorship because co-sponsorship is an observable signal, and tells us intuitively how much support one bill has and therefore how much clout the politician behind the bill has. 
 
-This problem has obvious utility: it would be useful to keep the electorate informed of their elected representatives' political collaborations and alliances in the congress, as well as indicate any changes or tendencies in politicians' stances on various issues. Moreover, for politicians, this information can be used as a guidance to seek more targeted co-sponsors, sparing them from wasting precious political capital and writing countless (and potentially spammy and ineffective) "Dear Colleagues" letters. 
+This problem has obvious utility: it would be useful to keep the electorate informed of their elected representatives' political collaborations and alliances in the Congress, as well as indicate any changes or tendencies in politicians' stances on various issues. Moreover, for politicians, this information can be used as a guidance to seek more targeted co-sponsors, sparing them from wasting precious political capital and writing countless (and potentially spammy and ineffective) "Dear Colleagues" letters. 
 
 \subsection{Data Preparation}
 In this project, we used the campaign financial data provided by the Federal Election Committee\footnote{FEC Website data: https://www.fec.gov/data/advanced/?tab=bulk-data } from 1981 to 2016 (the 97th to the 114th Congress, including House, Senate and Presidential races). The bill co-authorship data is obtained from the Government Publishing Office's website for the same period. \footnote{https://www.govinfo.gov/bulkdata/BILLS/115}.  We have hosted our code repository at \textit{https://github.com/yzhong94/cs224w-project/}. 
@@ -82,21 +82,49 @@ In this project, we used the campaign financial data provided by the Federal Ele
 A large part of effort to date has been devoted to data cleaning. In particular, we have to join the campaign financial data, which uses FEC's Candidaite IDs, with the Congress bill data, which uses its own ID system, on legislators. Our approach is to first join by legislator's capitalized full first name + last name + state (abbreviation), which leaves out more than 100 legislators not being matched between the two datasets. A close examination reveals that some legislators go by nicknames in signing bills but have full legal names on the campaign financial records - for instance, Tom Lewis is actually Thomas Lewis, and James Cooper going by Jim; this is made worse by irregular nicknames too, such as Richard "Doc" Hastings. Some legislators go by their middle names, such as Raymond Eugene Green going by Gene Green, David Adam Smith by Adam Smith. To combat this, we first filtered out all the candidates not matched by the method above (capitalized full first name + last name + state abbreviation), and joined them together by capitalized full last name + state abbreviation, because people are very unlikely to have nicknames for their last names. After that, we created an Excel check function to alert us if we have one NodeID (from the bill data) maps to multiple different Candidate IDs (note: it's possible for a person to have two different Candidate IDs, which happens when this person ran for House first, then Senate later). We then manually inspected the flagged rows and kicked out false positives. In the end, we were able to find 1813 legislators/candidates from both the campaign financial record and the bill co-sponsorship data from 1981 to 2016. 
 
 \subsection{Network Construction}
-We constructed a tripartite network: committees, legislators, bills.  A committee can be a PAC, SuperPAC or party committee.  A legislator is an elected official in the Congress. A bill is a draft of legislation that has been sponsored by a legislator and co-sponsored by others. To describe the whole graph, we include all years of data first (from 1981 to 2016), and then look at one term's data for an individual grapj. 
+We constructed a tripartite network: committees, legislators, bills.  A committee can be a PAC, SuperPAC or party committee.  A legislator is an elected official in the Congress, which can be a senator or a representative. A bill is a draft of legislation that has been sponsored by a legislator and co-sponsored by others. To describe the whole graph, we include all years of data first (from 1981 to 2016), and then look at one term's data for an individual graph. 
 
 Between committees and legislators, an undirected link is added if a committee donates to a legislator (we do not allow for multiple edges between two nodes). This way, we ended up having 1813 candidates with donations across the years. We aggregated the donation amounts between candidates and committees by year and preserved the sum as edge weights, to simplify multi-edges.  Between legislators and bills, an undirected link is added first if candidates appear on the bill as either an author or a co-sponsor. 
 
 \subsection{Link Prediction}
 After constructing the graph, we applied \textbf{supervised learning link prediction} on the bill co-sponsorship part of the tripartitite graph, \textbf{between politicians and bills}.
 
-We frame our link prediction problem as follows: predict the link between legislators, where a link exists if two legislators cosponored a bill together, for a specific Congress term.  \textbf{Features to predict this link all come from the campaign network \textit{prior t}o the Congress going into session}, which is a bipartite network (legislators and committees), where a link between a committee node and a legislator node exists if the committee donates money to the legislator.  We want to see if immediate donation has an effect on collaboration, hence we use campaign data two years before to predict the cosponsorship network during a congressional term. 
+Formally, let $G(V,E)$ be our entire tripartitite graph with node set $V$ and edge set $E$, covering periods from $t_{start}$ to $t_{end}$. Let $t_0$ be an arbitrary time period between  $t_{start}$ to $t_{end}$. Our training and test graph pair will be $\{G_{t_{0}}, G_{t_{1}}\}$: we will train based on network characteristics found in the subgraph $G^{campaign}_{t_{0}}(V_{legislators}, V_{committees})$, and use that to predict edge formations among \textbf{the candidate nodes} in $G^{co-sponsor}_{t_{1}}(V_{legislators},V_{bills})$ where $V \in \{G_{t_{0}}, V_{legislators}\}$ (which is $V_{legislators, t_1}$). We can then repeat the process, run the best model on a new pair of graphs (for different years) as validation, and report the metrics for final evaluation. 
+
+We frame our link prediction problem as follows: predict the link between legislators, where a link exists if two legislators cosponored a bill together, for a specific Congress term.  
+
+We have constructed four link prediction models:
+\begin{itemize}
+    \item Naive baseline predictor: a baseline model based on graph density
+    \item Legislator only predictor: a baseline model based on candidate attributes (party, state)
+    \item Campaign only predictor: prediction model using features generated from campaign graph network attributes
+    \item FIXME Candidate and campaign predictor: prediction model using features from both campaign graph network attributes and candidate attributes
+\end{itemize}
+
+
+\subsubsection{Naive baseline predictor}
+We define our \textbf{naive baseline predictor} as follows: given a pair of nodes$v_1, v_2$, we will always predict there will be an edge between these two pairs, i.e. as a complete graph. This is computed for $G_{co-sponsor}$.  That is, $$Accuracy_{Naive Baseline} = \frac{2||E||}{||V|| \dot (||V|| - 1)} $$
+
+Using the 100th Congress (1987 - 1988) as the training set and the 101th Congress (1989-1990) as the test set.  The baseline accuracy is calculated as $96,052/138,075= 0.695$ per above. 
+
+\subsubsection{Legislator only predictor}
+We define a second baseline using \textbf{legislator attributes only}.  \textbf{Features for link prediction all come from information about the legislators}.  There are two features: IsFromSameState, IsFromSameParty.
+
+Formally, for every $E(V_{legislator,i},V_{legislator,j}$ in $G_{co-sponsor}$, IsFromSameState is 1 if $V_{legislator,i}$ and $V_{legislator,j}$ are from the same state, and 0 other wise, likewise for IsFromSameParty.  
+Features are then used in machine learning models for link prediction.
+
+\subsubsection{Campaign only predictor}
+\textbf{Features for link prediction all come from the campaign network \textit{prior to} the Congress going into session}, which is a bipartite network (legislators and committees), where a link between a committee node and a legislator node exists if the committee donates money to the legislator.  We want to see if immediate donation has an effect on collaboration, hence we use campaign data two years before to predict the cosponsorship network during a congressional term. 
 
 For example, if we are predicting cosponsorship in the 100th congress (1987 - 1988), we would use campaign data from 1985 to 1986, in order to construct the features.
 
-Formally, let $G(V,E)$ be our entire tripartitite graph with node set $V$ and edge set $E$, covering periods from $t_{start}$ tp $t_{end}$. Let $t_0$ be an arbitrary time period between  $t_{start}$ tp $t_{end}$. Our training and test graph pair will be $\{G_{t_{0}}, G_{t_{1}}\}$: we will train based on network characteristics found in the subgraph $G^{campaign}_{t_{0}}$, and use that to predict edge formations among \textbf{the candidate nodes} in $G_{t_{1}}$ where $V \in \{G_{t_{0}}, V_{legislators}\}$ (which is $V_{legislators, t_1}$). We can then repeat the process, run the best model on a new pair of graphs (for different years) as validation, and report the metrics for final evaluation. 
+We tried two types of feature construction:
+\begin{itemize}
+    \item Supervised feature learning using network structure
+    \item Unsupervised feature learning using node embedding from node2vec random walks
+\end{itemize}
 
-\subsubsection{Features and Algorithms}
-We constructed features from the campaign subgraph solely. Features include: 
+For generated features, we constructed features from the campaign subgraph solely. Features include: 
 \begin{itemize}
 \item Common Neighbors, Union of Neighbors, Jaccard Index
 \item Degree Difference in a pair of legislator nodes
@@ -107,18 +135,31 @@ We constructed features from the campaign subgraph solely. Features include:
 \item Spectral Clusters from Clauset-Newman-Moore greedy modularity maximization
 \end{itemize}
 
-Before feeding all the features engineered above into our machine learning models, we conducted feature selection as well, using Scikit-Learn's implementation of F-statistic in an ANOVA test. 
+Before feeding all the features engineered above into our machine learning models, we conducted feature selection as well, using Scikit-Learn's implementation of F-statistic in an ANOVA test.
 
-For models, we have tried two algorithms: logistic regression and decision tree. (TODO: add in more algorithms?) For logistic regression, we used scikit-learn's \cite{scikit-learn} default implementation with {-1,1} notation for labels and $L2$ regularization. The optimization problem formulation is as $$min_{w,c} \frac{1}{2} w^Tw + C \sum_{i = 1}^{n} \log (e^{(-y_i (X^T_i w + c)) + 1})$$
+For features construction using node embeddings, we used shallow encoding, $ENC(v)= Zv$, and node2vec algorithm for random walks.  We used the example implementation from (TODO: ADD https://github.com/aditya-grover/node2vec AS REFERENCE) with the following parameter:
+\begin{itemize}
+    \item p = 1, q = 2 for BFS-like walks
+    \item walk length = 80, number of walks = 10
+\end{itemize}
+Using node embeddings learned from random walks, we computed features using the following aggregation function:
+\begin{itemize}
+    \item Hadamard: $f(z_i,z_j) = g(z_i * z_j)$
+    \item Sum: $f(z_i,z_j) = g(z_i + z_j)$
+    \item Average: $f(z_i,z_j) = g(\frac{z_i + z_j}{2})$
+    \item Distance: $f(z_i,z_j) = g(\|z_i - z_j\|_2)$
+\end{itemize}
+
+Before feeding all the features learned above into our machine learning models, we conducted feature selection as well, again using Scikit-Learn's implementation of F-statistic in an ANOVA test to select the top 20 percentile.
+
+For models to predict link, we have tried two algorithms: logistic regression and decision tree. For logistic regression, we used scikit-learn's \cite{scikit-learn} default implementation with {-1,1} notation for labels and $L2$ regularization. The optimization problem formulation is as $$min_{w,c} \frac{1}{2} w^Tw + C \sum_{i = 1}^{n} \log (e^{(-y_i (X^T_i w + c)) + 1})$$
 
 TODO: add math for decision tree?
 
+
+
 \subsubsection{Evaluation Method}
 We used accuracy as our main success measure: $$Accuracy = \frac{NumberOfCorrectPredictions}{TotalNumberOfPredictionsMade}$$
-
-We define our \textbf{naive baseline predicto}r as follows: given a pair of nodes$v_1, v_2$, we will always predict there will be an edge between these two pairs, i.e. as a complete graph. That is, $$Accuracy_{Naive Baseline} = \frac{2||E||}{||V|| \dot (||V|| - 1)} $$
-
-Using the 100th Congress (1987 - 1988) as the training set and the 101th Congress (1989-1990) as the test set.  The baseline accuracy is calculated as $96,052/138,075= 0.695$ per above. 
 
 \section{Results and Findings}
 \subsection{Network Description}
@@ -207,7 +248,7 @@ For the \textbf{folded campaign contribution graph, it represents a typical smal
 \end{figure}
 
 \subsection{Feature Selection}
-We first observed that \textbf{features from contribution amounts} always rank dead last, while contributing to slow running time of our algorithms. Thus, we removed these features first (sum and absolute difference). We then tabulated results of running F-tests for the remaining features below: 
+Using 100th and 101st Congress, we first observed that \textbf{features from contribution amounts} always rank dead last, while contributing to slow running time of our algorithms. Thus, we removed these features first (sum and absolute difference). We then tabulated results of running F-tests for the remaining features below: 
 
 \begin{tabular}{|l|r|}
 \hline
@@ -224,9 +265,11 @@ Clustering Coeff Mean              &  841.1             \\ \hline
 Spectral Cluster          & 0.8                      \\ \hline
 \end{tabular}
 
-This indicates that knowing clusters generated from modularity maximization is actually not helpful, which is a new learning to us. It also shows that the legislators' connectedness and the financial contribution communities they are in are important and indictive of their collaboration in office. 
+This indicates that knowing clusters generated from modularity maximization to mimic partyline is actually not helpful, which is a new learning to us. It also shows that the legislators' connectedness and the financial contribution communities they are in are important and indicative of their collaboration in office. 
 
-In order to determine how many features we should be using, we used grid search to determine the optimal selector percentile as shown in Figure \ref{fig:selectorpercentilegridsearch}. This shows that we should be using the top 7 features at least for logistic regression. 
+In order to determine how many features we should be using in logistic regression, we used grid search to determine the optimal selector percentile as shown in Figure \ref{fig:selectorpercentilegridsearch}. This shows that we should be using all features. 
+For the decision tree, we have tuned the parameter for tree-depth, in order to avoid overfitting by running a grid search as shown in Figure \ref{fig:max_depth_grid}. Therefore, we set the maximum tree depth to be 10. 
+
 \begin{figure}
 \centering
 \includegraphics[width=0.7\linewidth]{selector_percentile_grid_search}
@@ -235,16 +278,8 @@ In order to determine how many features we should be using, we used grid search 
 \end{figure}
 
 \subsection{Model Performance}
-We have tabulated model accuracy below, using top 7 features: \\
-\begin{tabular}{|l|r|}
-\hline
-\multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Accuracy} \\ \hline
-Logistic Regression   & ---              \\ \hline
-Decision Tree               & ---                  \\ \hline
-\end{tabular}
 
-For the decision tree, we have tuned the parameter for tree-depth, in order to avoid overfitting by running a grid search as shown in Figure \ref{fig:max_depth_grid}. Therefore, we set the maximum tree depth to be 10. 
-
+TODO: insert table from Notes
 TODO: add in actual accuracies. 
 TODO: add in confusion matrix. 
 
