@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  8 DEC 2018 16:10
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  8 DEC 2018 21:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -550,22 +550,46 @@ LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <35.83> not available
 (Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 124.
 
 
+<CS-Logo-horizontal.png, id=4, 170.3163pt x 33.0033pt>
+File: CS-Logo-horizontal.png Graphic file (type png)
 
-LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <24.88> not available
-(Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 152.
+<use CS-Logo-horizontal.png>
+Package pdftex.def Info: CS-Logo-horizontal.png used on input line 133.
+(pdftex.def)             Requested size: 433.62pt x 84.02682pt.
+
+Overfull \hbox (214.608pt too wide) in paragraph at lines 133--134
+[][] 
+ []
+
+<network_illustration2.png, id=6, 645.1302pt x 407.121pt>
+File: network_illustration2.png Graphic file (type png)
+
+<use network_illustration2.png>
+Package pdftex.def Info: network_illustration2.png used on input line 155.
+(pdftex.def)             Requested size: 361.34999pt x 228.0359pt.
 
 
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 160
+LaTeX Font Warning: Font shape `OT1/cmss/bx/it' undefined
+(Font)              using `OT1/cmss/bx/n' instead on input line 164.
+
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 177
 .
-LaTeX Font Info:    No file OMScmss.fd. on input line 160.
+LaTeX Font Info:    No file OMScmss.fd. on input line 177.
 
 LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbullet' on input line 160.
+(Font)              for symbol `textbullet' on input line 177.
 
+<overall_deg_distro.png, id=7, 578.16pt x 433.62pt>
+File: overall_deg_distro.png Graphic file (type png)
 
-Underfull \hbox (badness 10000) in paragraph at lines 186--187
+<use overall_deg_distro.png>
+Package pdftex.def Info: overall_deg_distro.png used on input line 218.
+(pdftex.def)             Requested size: 383.27098pt x 287.45383pt.
 
+Overfull \hbox (1.76344pt too wide) in paragraph at lines 222--224
+[]\OT1/cmss/bx/n/24.88 Bill Co-authorship Graph re-sem-bles the aca-demic col-l
+ab-o-ra-tion graph
  []
 
 Package epstopdf Info: Source file: <figures/pwl_error_fbest_realize.eps>
@@ -577,50 +601,48 @@ ted-to.pdf>
 (epstopdf)                    size: 11502 bytes
 (epstopdf)             Command: <repstopdf --outfile=figures/pwl_error_fbest_re
 alize-eps-converted-to.pdf figures/pwl_error_fbest_realize.eps>
-(epstopdf)             \includegraphics on input line 291.
+(epstopdf)             \includegraphics on input line 236.
 Package epstopdf Info: Output file is already uptodate.
 
-<figures/pwl_error_fbest_realize-eps-converted-to.pdf, id=4, 537.00626pt x 409.
+<figures/pwl_error_fbest_realize-eps-converted-to.pdf, id=8, 537.00626pt x 409.
 53pt>
 File: figures/pwl_error_fbest_realize-eps-converted-to.pdf Graphic file (type p
 df)
  <use figures/pwl_error_fbest_realize-eps-converted-to.pdf>
 Package pdftex.def Info: figures/pwl_error_fbest_realize-eps-converted-to.pdf u
-sed on input line 291.
+sed on input line 236.
 (pdftex.def)             Requested size: 689.88309pt x 526.12126pt.
  [1{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 Non-PDF special ignored!
 
 
 Non-PDF special ignored!
-Non-PDF special ignored! <./figures/pwl_error_fbest_realize-eps-converted-to.pd
-f>] (./poster.aux)
+Non-PDF special ignored! <./CS-Logo-horizontal.png> <./network_illustration2.pn
+g> <./overall_deg_distro.png> <./figures/pwl_error_fbest_realize-eps-converted-
+to.pdf>] (./poster.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 12201 strings out of 493089
- 246894 string characters out of 6134842
- 296456 words of memory out of 5000000
- 15448 multiletter control sequences out of 15000+600000
- 14174 words of font info for 50 fonts, out of 8000000 for 9000
+ 12102 strings out of 493089
+ 245136 string characters out of 6134842
+ 294472 words of memory out of 5000000
+ 15348 multiletter control sequences out of 15000+600000
+ 8929 words of font info for 32 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 55i,10n,60p,1055b,670s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb>
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
-/usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></u
-sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr
-/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/
-local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr
-/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi17.pfb></usr
-/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/
-local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on poster.pdf (1 page, 113503 bytes).
+ 55i,7n,54p,1055b,244s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
+></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb>
+</usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></
+usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></u
+sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></
+usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi17.pfb></
+usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on poster.pdf (1 page, 217173 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
- 42 compressed objects within 1 object stream
+ 53 PDF objects out of 1000 (max. 8388607)
+ 34 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 18 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 33 words of extra memory for PDF output out of 10000 (max. 10000000)
 

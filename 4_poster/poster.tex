@@ -125,14 +125,13 @@
 }
 \end{textblock}
 
-
 % Uni logo in the top right corner. A&A in the bottom left. Gives a
 % good visual balance, but you may want to change this depending upon
 % the graphics that are in your poster.
-%\begin{textblock}{2}(0,10)
+\begin{textblock}{2}(17,0)
 %Your logo here
-%%\includegraphics{/usr/local/share/images/AandA.epsf}
-%\end{textblock}
+\includegraphics[width=6in]{CS-Logo-horizontal}
+\end{textblock}
 
 %\begin{textblock}{2}(21.2,0)
 %Another logo here
@@ -148,140 +147,86 @@ Political collaboration is an important part of legislative life, and congress b
 
 \medskip
 \hrule\medskip
-\Head{Group lasso}\\
-One approach is the \emph{group lasso}:
-\[
-\begin{array}{ll}
-\mbox{minimize} & f(x) + \lambda \sum_{i=1}^N \|x_i\|_2
-\end{array}
-\]
-\ie, like lasso, but require groups of variables to be zero or not
-\begin{itemize}\itemsep=12pt
-\item also called $\ell_{1,2}$ mixed norm regularization
-\end{itemize}
+\Head{Method}\\
+Our project is made up of two parts: graph modeling, and link prediction. For graph modeling, we aim to construct a tripartite graph of political committees, legislators (we will ignore those failed to get elected to office), and the bills those legislators worked together on. A sample graph can be found in Figure \ref{fig_sim}. With the graph constructed, we provide a set of statistics and descriptions of the graph structure (including their one-mode projections, for both bills-legislators and committees-legislators subgraphs). After that, we construct a link prediction problem by dividing graph into different years of congress, and select the suitable years for model training and evaluation. Lastly, we report our learnings from the entire exercise. 
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=5in]{network_illustration2}
+\caption{Illustration of the Congress Political Network}
+\label{fig_sim}
+\end{figure*}
+
 
 \medskip
 \hrule\medskip
-\Head{Structured group lasso}\\
-Another approach is the \emph{structured group lasso}:
-\[
-\begin{array}{ll}
-\mbox{minimize} & f(x) + \sum_{i=1}^N \lambda_i \|x_{g_i}\|_2
-\end{array}
-\]
-where $g_i \subseteq [n]$ and $\mathcal G = \{g_1, \dots, g_N\}$
-\begin{itemize}\itemsep=12pt
-\item like group lasso, but the groups can overlap arbitrarily
-\item particular choices of groups can impose `structured' sparsity
-\item \eg, topic models, selecting interaction terms for (graphical) models,
-    tree structure of gene networks, fMRI data
-\item generalizes to the \textbf{composite absolute penalties family}:
-\[
-r(x) = \|(\|x_{g_1}\|_{p_1}, \dots, \|x_{g_N}\|_{p_N})\|_{p_0}
-\]
-\end{itemize}
+\Head{Link Prediction}\\
+We frame our link prediction problem as follows: predict the link between legislators, where a link exists if two legislators cosponored a bill together, for a specific Congress term.  \textbf{Features to predict this link all come from the campaign network \textit{prior t}o the Congress going into session}, which is a bipartite network (legislators and committees), where a link between a committee node and a legislator node exists if the committee donates money to the legislator.  We want to see if immediate donation has an effect on collaboration, hence we use campaign data two years before to predict the cosponsorship network during a congressional term. 
 
-\medskip
-\hrule\medskip
-\Head{Hierarchical selection}\\
-\begin{center}
-\begin{tikzpicture}
-[dot/.style={rectangle,draw=black,fill=white,inner sep=5pt,minimum size=5pt}]
-\node[dot,draw=orange,thick] at (0,10) (n1) {1};
-\node[dot] at (-3,8) (n2) {2};
-\node[dot,draw=orange,thick] at (3,8) (n3) {3};
-\node[dot] at (-3,6) (n4) {4};
-\node[dot,draw=orange,thick] at (1.5,6) (n5) {5};
-\node[dot] at (4.5,6) (n6) {6};
-\draw[->] (n1) -- (n2);
-\draw[->] (n1) -- (n3);
-\draw[->] (n2) -- (n4);
-\draw[->] (n3) -- (n5);
-\draw[->] (n3) -- (n6);
-\end{tikzpicture}
-\end{center}
+For example, if we are predicting cosponsorship in the 100th congress (1987 - 1988), we would use campaign data from 1985 to 1986, in order to construct the features.
 
-\begin{itemize}\itemsep=8pt
-    \item $\mathcal G = \{ \{4\}, \textcolor{orange}{\{5\}}, \{6\}, \{2,4\}, 
-        \textcolor{orange}{\{3,5,6\}}, \textcolor{orange}{\{1,2,3,4,5,6\} \}}$
-\item nonzero variables form a rooted and connected subtree
-    \begin{itemize}
-        \item if node is selected, so are its ancestors
-        \item if node is not selected, neither are its descendants
-    \end{itemize}
-\end{itemize}
+
 
 \end{textblock}
 
 \begin{textblock}{7.0}(8,1.5)
 \hrule\medskip
-\Head{Algorithm}\\
-We solve this problem using an ADMM lasso implementation:
-\begin{verbatim}
-prox_f = @(v,rho) (rho/(1 + rho))*(v - b) + b;
-prox_g = @(v,rho) (max(0, v - 1/rho) - max(0, -v - 1/rho));
-
-AA = A*A';
-L  = chol(eye(m) + AA);
-
-for iter = 1:MAX_ITER
-    xx = prox_g(xz - xt, rho);
-    yx = prox_f(yz - yt, rho);
-
-    yz = L \ (L' \ (A*(xx + xt) + AA*(yx + yt)));
-    xz = xx + xt + A'*(yx + yt - yz);
-  
-    xt = xt + xx - xz;
-    yt = yt + yx - yz;
-end
-\end{verbatim}
+\Head{Features and Algorithms}\\
+We constructed features from the campaign subgraph solely. Features include: 
+\begin{itemize}
+\item Common Neighbors, Union of Neighbors, Jaccard Index
+\item Degree Difference in a pair of legislator nodes
+\item Contribution Amount (sum and absolute difference)
+\item Clustering Co-efficient (sum, absolute difference, mean)
+\item Degree Centrality difference
+\item Shortest Distance between two legislator nodes
+\item Spectral Clusters from Clauset-Newman-Moore greedy modularity maximization
+\end{itemize}
+For algorithms, we used supervised learning models like \textbf{logistic regression} and \textbf{decision trees}. For logistic regression, we used scikit-learn's default implementation with {-1,1} notation for labels and $L2$ regularization. The optimization problem formulation is as $$min_{w,c} \frac{1}{2} w^Tw + C \sum_{i = 1}^{n} \log (e^{(-y_i (X^T_i w + c)) + 1})$$
 
 \medskip
 \hrule\medskip
-\Head{Line search}\\
-If $L$ is not known (usually the case), can use the following line search:
+\Head{Evaluation Method}\\
+We used accuracy as our main success measure: $$Accuracy = \frac{NumberOfCorrectPredictions}{TotalNumberOfPredictionsMade}$$
 
-\noindent\rule[-5pt]{.8\textwidth}{0.4pt}
-{\footnotesize
-\begin{tabbing}
-    {\bf given} $x^k$, $\lambda^{k-1}$, and parameter $\beta \in (0,1)$. \\*[\smallskipamount]
-    Let $\lambda := \lambda^{k-1}$. \\*[\smallskipamount]
-    {\bf repeat} \\
-    \qquad \= 1.\ Let $z := \prox_{\lambda g}(x^{k} - \lambda \nabla f(x^{k}))$. \\
-    \> 2.\ {\bf break if} $f(z) \leq \hat{f}_{\lambda}(z, x^{k})$. \\
-    \> 3.\ Update $\lambda := \beta \lambda$. \\*[\smallskipamount]
-    {\bf return} $\lambda^{k} := \lambda$, $x^{k+1}:=z$.
-\end{tabbing}}
-\noindent\rule[10pt]{.8\textwidth}{0.4pt}
+We define our \textbf{naive baseline predicto}r as follows: given a pair of nodes$v_1, v_2$, we will always predict there will be an edge between these two pairs, i.e. as a complete graph. That is, $$Accuracy_{Naive Baseline} = \frac{2||E||}{||V|| \dot (||V|| - 1)} $$
 
-typical value of $\beta$ is $1/2$, and 
-\[
-\hat{f}_\lambda(x,y) = f(y) + \nabla f(y)^T (x - y) + 
-(1/2\lambda)\|x - y\|_2^2
-\]
+Using the 100th Congress (1987 - 1988) as the training set and the 101th Congress (1989-1990) as the test set.  The baseline accuracy is calculated as $96,052/138,075= 0.695$.
 
 \medskip
 \hrule\medskip
-\Head{Convergence proof}\\
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\Head{Results and Findings}\\
+The basic stats of the tripartitie graph are included below: 
+\begin{itemize}
+\item Legislator count: 1,919 (1813 of which are found in campaign financial network)
+\item Bill count: 221,726 
+\item Committee count: 14,326
+\item Edges between legislators and bills: 3,086,039
+\item Edges between committees and candidates: 911,965
+\item Overall tripartite graph node count: 237,971, and edge count: 3,998,004
+\end{itemize}
 
 \end{textblock}
 
 \begin{textblock}{7.0}(16,1.5)
 
 \hrule\medskip
-\Head{Numerical example}\\
-Consider a numerical example with $f(x) = \|Ax - b\|_2^2$
-with $A \in \reals^{10 \times 100}$ and $b \in \reals^{10}$.
-Entries of $A$ and $b$ are generated as independent samples from
-a standard normal distribution.
-Here, we have chosen $\lambda$ using cross validation.
+\Head{Network Description}\\
+we have plotted the degree distributions of the overall tripartite graph in \ref{fig:overalldegdistro}. 
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{overall_deg_distro}
+\caption{Overall Tripartite Graph Degree Distribution on log-log scale}
+\label{fig:overalldegdistro}
+\end{figure}
+\textbf{Bill Co-authorship Graph resembles the academic collaboration graph with a power law pattern} (long tail) - the most frequent degrees are the smallest degrees, and it has a very high clustering co-efficient. 
+For the \textbf{folded campaign contribution graph, it represents a typical small world pattern with high clustering coefficient}.
 
 \medskip
 \hrule\medskip
-\Head{Results}\\
-On this numerical example, the ADMM method converges quickly.
-We give two realizations corresponding to different parameters $A$ and $b$.
+\Head{Model Performance}\\
+PLACEHOLDER
+
 \begin{center}
 \psfrag{k}[t][b]{$k$}
 \psfrag{fbest - fmin}[b][t]{$f_\mathrm{best}^{(k)} - f^\star$}
@@ -294,13 +239,7 @@ We give two realizations corresponding to different parameters $A$ and $b$.
 \medskip
 \hrule\medskip
 \Head{Conclusion}\\
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-\medskip
-\hrule\medskip
-\Head{Acknowledgements}\\
-This material is based upon work supported by the
-X Fellowship. 
+US Congressional Politics is indeed a small world: legislators are connected to other legislators via common donors and co-authorship on bills. We have identified the academic collaboration network-like pattern for bill co-authorship data, and a "small world" pattern among legislators, with consistently high clustering coefficients. Moreover, it does appear that "money moves politics": using features learned from campaign donation networks, we can confidently predict if two legislators will later collaborate on bills together - easily beating a naive baseline. In paricular, decision tree model performed very well to give us $82\%$ accuracy. 
 
 \end{textblock}
 
