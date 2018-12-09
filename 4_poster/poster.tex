@@ -165,8 +165,6 @@ We frame our link prediction problem as follows: predict the link between legisl
 
 For example, if we are predicting cosponsorship in the 100th congress (1987 - 1988), we would use campaign data from 1985 to 1986, in order to construct the features.
 
-
-
 \end{textblock}
 
 \begin{textblock}{7.0}(8,1.5)
@@ -181,6 +179,7 @@ We constructed features from the campaign subgraph solely. Features include:
 \item Degree Centrality difference
 \item Shortest Distance between two legislator nodes
 \item Spectral Clusters from Clauset-Newman-Moore greedy modularity maximization
+\item node2vec embeddings
 \end{itemize}
 For algorithms, we used supervised learning models like \textbf{logistic regression} and \textbf{decision trees}. For logistic regression, we used scikit-learn's default implementation with {-1,1} notation for labels and $L2$ regularization. The optimization problem formulation is as $$min_{w,c} \frac{1}{2} w^Tw + C \sum_{i = 1}^{n} \log (e^{(-y_i (X^T_i w + c)) + 1})$$
 
@@ -208,14 +207,13 @@ The basic stats of the tripartitie graph are included below:
 
 \end{textblock}
 
-\begin{textblock}{7.0}(16,1.5)
+\begin{textblock}{7.0}(16,0.8)
 
 \hrule\medskip
-\Head{Network Description}\\
-we have plotted the degree distributions of the overall tripartite graph in \ref{fig:overalldegdistro}. 
+\Head{Network Description}
 \begin{figure}
 \centering
-\includegraphics[width=0.5\linewidth]{overall_deg_distro}
+\includegraphics[width=0.4\linewidth]{overall_deg_distro}
 \caption{Overall Tripartite Graph Degree Distribution on log-log scale}
 \label{fig:overalldegdistro}
 \end{figure}
@@ -224,22 +222,61 @@ For the \textbf{folded campaign contribution graph, it represents a typical smal
 
 \medskip
 \hrule\medskip
-\Head{Model Performance}\\
-PLACEHOLDER
+\Head{Model Performance}
+\begin{table}[htb]
+%\resizebox{\columnwidth}{!}{
 
-\begin{center}
-\psfrag{k}[t][b]{$k$}
-\psfrag{fbest - fmin}[b][t]{$f_\mathrm{best}^{(k)} - f^\star$}
-\psfrag{noise-free realize}{noise-free case}
-\psfrag{realize1}{realization 1}
-\psfrag{realize2}{realization 2}
-\includegraphics[width=0.9\textwidth]{figures/pwl_error_fbest_realize.eps}
-\end{center}
+\begin{tabular}{|l|r|r|}
+
+\hline
+\multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Train Accuracy} & \multicolumn{1}{c|}{Test Accuracy} \\ \hline
+Naive Baseline  & 0.695      & 0.695         \\ \hline
+Candidate Party/State  & 0.695      & 0.698         \\ \hline
+Logistic Regression & 0.786      & 0.774         \\ \hline
+Decision Tree & 0.854      & 0.794         \\ \hline
+Logistic Reg w/ Node2Vec & 0.728      & 0.728         \\ \hline
+\end{tabular}
+%}
+\caption{Model Performance for Limited Dataset}
+  \label{tab:model1}
+\end{table}
+
+\begin{table}[htb]
+%\resizebox{\columnwidth}{!}{
+\begin{tabular}{|l|r|r|}
+
+\hline
+\multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Train Accuracy} & \multicolumn{1}{c|}{Test Accuracy} \\ \hline
+Naive Baseline  & 0.697      & 0.691         \\ \hline
+Candidate Party/State  & 0.695      & 0.698         \\ \hline
+Logistic Regression & 0.748      & 0.714         \\ \hline
+Decision Tree & 0.795      & 0.740         \\ \hline
+\end{tabular}
+%}
+\caption{Model Performance for All Datasets Combined}
+  \label{tab:model2}
+\end{table}
+
+\begin{figure}
+\centering
+\begin{minipage}{0.48\linewidth}
+
+\includegraphics[width=\linewidth]{confusion_tree_limited}
+\caption{Confusion Matrix for Decision Tree in Limited Dataset}
+\label{fig:confusion_tree_limited}
+\end{minipage}\hfill
+\begin{minipage}{0.48\linewidth}
+
+\includegraphics[width=\linewidth]{logreg_limited}
+\caption{Confusion Matrix for Logistic Regression in Limited Dataset}
+\label{fig:logreg_limited}
+ \end{minipage}
+\end{figure}
 
 \medskip
-\hrule\medskip
+\hrule \medskip
 \Head{Conclusion}\\
-US Congressional Politics is indeed a small world: legislators are connected to other legislators via common donors and co-authorship on bills. We have identified the academic collaboration network-like pattern for bill co-authorship data, and a "small world" pattern among legislators, with consistently high clustering coefficients. Moreover, it does appear that "money moves politics": using features learned from campaign donation networks, we can confidently predict if two legislators will later collaborate on bills together - easily beating a naive baseline. In paricular, decision tree model performed very well to give us $82\%$ accuracy. 
+US Congressional Politics is indeed a small world: legislators are connected to other legislators via common donors and co-authorship on bills. We have identified the academic collaboration network-like pattern for bill co-authorship data, and a "small world" pattern among legislators, with consistently high clustering coefficients. Moreover, it does appear that "money moves politics": using features learned from campaign donation networks, we can confidently predict if two legislators will later collaborate on bills together - beating a naive baseline. In paricular, decision tree model performed very well to give us $79\%$ accuracy. 
 
 \end{textblock}
 
