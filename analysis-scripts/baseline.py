@@ -64,19 +64,19 @@ def getAttrBaseline(term,Y):
     print X.shape
     print X.head()
     X['fromSameParty'] = ''
-    #X['fromSameState'] = ''
+    X['fromSameState'] = ''
     print X[X['CAND_PTY_AFFILIATION_y'] == X['CAND_PTY_AFFILIATION_x']].shape
     
     X['fromSameParty'][X['CAND_PTY_AFFILIATION_y'] == X['CAND_PTY_AFFILIATION_x']] = 1
     X['fromSameParty'][X['CAND_PTY_AFFILIATION_y'] != X['CAND_PTY_AFFILIATION_x']] = 0
 
-    #X['fromSameState'][X['state_y_y'] == X['state_y_x']] = 1
-    #X['fromSameState'][X['state_y_y'] != X['state_y_x']] = 0
+    X['fromSameState'][X['state_y_y'] == X['state_y_x']] = 1
+    X['fromSameState'][X['state_y_y'] != X['state_y_x']] = 0
 
 
 
     Y = Y[['result']]
-    #X = X[['fromSameState','fromSameParty']]
+    X = X[['fromSameState','fromSameParty']]
     X = X[['fromSameParty']]
     print X.head()
 

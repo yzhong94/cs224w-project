@@ -25,6 +25,11 @@ James~H Fowler.
 \newblock Connecting the congress: A study of cosponsorship networks.
 \newblock {\em Political Analysis}, 14(4):456--487, 2006.
 
+\bibitem{node2vec}
+Aditya Grover and Jure Leskovec.
+\newblock node2vec: Scalable feature learning for networks.
+\newblock {\em Knowledge Discovery and Data Mining}, 2016.
+
 \bibitem{liben2007link}
 David Liben-Nowell and Jon Kleinberg.
 \newblock The link-prediction problem for social networks.

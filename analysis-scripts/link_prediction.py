@@ -11,15 +11,20 @@ import time
 import sklearn
 import matplotlib.pyplot as plt
 from sklearn.feature_selection import SelectPercentile, f_classif
+from sklearn.metrics import confusion_matrix
 import baseline
+import itertools
 
 start_time = time.time()
 
 def loadClusteringAttr():
     cluster_0 = pd.read_csv('../processed-data/cluster_0.csv')
     cluster_1 = pd.read_csv('../processed-data/cluster_1.csv')
+    #print cluster_0.squeeze().tolist()
 
-    return cluster_0['NodeId'].tolist(), cluster_1['NodeId'].tolist()
+
+    #return cluster_0['NodeId'].tolist(), cluster_1['NodeId'].tolist()
+    return cluster_0.squeeze().tolist(), cluster_1.squeeze().tolist()
 
 def loadBillData(term):
     '''
@@ -256,7 +261,7 @@ def getFeatures(G_CoSponsor, G_Campaign, bill_node, legislator_node, comm_node,l
     return X, Y
 
 def getlogistic(X, Y):
-    clf = LogisticRegression(random_state=0, solver='lbfgs', multi_class='ovr',max_iter = 10000000).fit(X, Y)
+    clf = LogisticRegression(random_state=42, solver='lbfgs', multi_class='ovr',max_iter = 10000000).fit(X, Y)
 
     clf.predict(X)
     print clf.score(X, Y)
@@ -304,11 +309,11 @@ def getFeaturesForTerm(term):
     
     G_CoSponsor = getSponsorLink(df)
     G_Campaign_folded = getCampaign_folded(G_Campaign,legislator_node_from_campaign)
-    '''
+    
     snap.SaveEdgeList(G_Campaign, 'G_Campaign.txt')
     snap.SaveEdgeList(G_Campaign_folded, 'G_Campaign_folded.txt')
     snap.SaveEdgeList(G_CoSponsor, 'G_CoSponsor.txt')
-    
+    '''
     G_Campaign_folded = snap.LoadEdgeList(snap.PUNGraph, 'G_Campaign_folded.txt',0,1)
     G_CoSponsor = snap.LoadEdgeList(snap.PUNGraph, 'G_CoSponsor.txt',0,1)
     '''
@@ -316,16 +321,48 @@ def getFeaturesForTerm(term):
     X['term'] = term
     return X, Y
 
+def plot_confusion_matrix(clf, X_test, Y_test, title):
+
+    pred = clf.predict(X_test)
+    cm = confusion_matrix(Y_test,pred)
+    print(cm)
+    plt.figure()
+    plt.title('Normalized Confusion Matrix for ' + title)
+    fmt = '.2f'
+    classes = [-1,1]
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+    thresh = cm.max() / 2
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    #plt.matshow(cm)
+    plt.show()
+
+    pass
+
 def main():
     '''
     Main script for link prediction
     '''
-    
-    print "-----LIMITED SAMPLES: 100TH AND 101ST CONGRESS-----"
-    print "-----BEGIN EXTRACTING FEATURES-----"
     '''
-    term = 100
+    print "-----LIMITED SAMPLES-----"
+    print "-----BEGIN EXTRACTING FEATURES-----"
     
+    term = 100
+    '''
+    '''
     X,Y = getFeaturesForTerm(term)
 
     X.to_csv('X.csv', index = False)
@@ -339,7 +376,7 @@ def main():
     
     print "My program took", time.time() - start_time, "to run test"
     '''
-    '''
+    
     
     print "-----ALL SAMPLES: 98th-112th-----"
     print "-----BEGIN EXTRACTING FEATURES-----"
@@ -368,15 +405,17 @@ def main():
     
     print "My program took", time.time() - start_time, "to run test"
 
+    
     '''
     print "-----BEGAN CLASSIFICATION-----" 
     print "-----LIMITED SAMPLES-----" 
-    '''
+    
     X = pd.read_csv('X.csv')
     Y = pd.read_csv('Y.csv')
 
     X_test = pd.read_csv('X_test.csv')
     Y_test = pd.read_csv('Y_test.csv')
+    '''
     '''
     print "-----ALL SAMPLES-----"    
     X = pd.read_csv('X_all.csv')
@@ -386,21 +425,24 @@ def main():
     Y_test = pd.read_csv('Y_test_all.csv')
     #Y_test = Y_test[X_test['term']==113]
     #X_test = X_test[X_test['term']==113]
-
-
     '''
+
+    
     #------GET BASELINE WITH PARTYLINE INFORMATION ONLY------#
     print "My program took", time.time() - start_time, "to begin baseline"
 
     X_base_train, Y_base_train = baseline.getAttrBaseline(term,Y)
-    X_base_test, Y_base_test = baseline.getAttrBaseline(term,Y_test)
+    X_base_test, Y_base_test = baseline.getAttrBaseline(term+1,Y_test)
+    #print X_base_test.head()
+    #print Y_base_test.head()
+
     print "My program took", time.time() - start_time, "to end baseline"
 
     print "logistic baseline"
     clf = getlogistic(X_base_train,Y_base_train)
     print clf.score(X_base_test,Y_base_test)
+    plot_confusion_matrix(clf, X_test, Y_test, 'Logistic Baseline - Candidate Info Only')
     
-    '''
     print "naive baseline", Y[Y['result'] == 1].shape[0]/float(Y.shape[0])
     
     
@@ -411,8 +453,10 @@ def main():
     clf = getlogistic(X,Y)
     print clf.score(X_test,Y_test)
 
+    plot_confusion_matrix(clf, X_test, Y_test, 'Logistic Regression')
+
     
-    
+    '''
     selector = SelectPercentile(f_classif, percentile = 10)
     selector.fit(X, Y)
 
@@ -421,6 +465,8 @@ def main():
 
     for i in Fval:
         print i
+    '''
+
     '''
     #grid search for selectpercentile#
     scores = []
@@ -441,6 +487,8 @@ def main():
     print "tree"
     clf = getTree(X,Y)
     print clf.score(X_test,Y_test)
+
+    plot_confusion_matrix(clf, X_test, Y_test, 'Decision Tree')
 
     '''
     #grid search for tree
