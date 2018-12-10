@@ -94,14 +94,12 @@ Formally, let $G(V,E)$ be our entire tripartitite graph with node set $V$ and ed
 
 We frame our link prediction problem as follows: predict the link between legislators, where a link exists if two legislators cosponored a bill together, for a specific Congress term.  
 
-We have constructed four link prediction models:
+We have constructed three link prediction models:
 \begin{itemize}
     \item Naive baseline predictor: a baseline model based on graph density
     \item Legislator only predictor: a baseline model based on candidate attributes (party, state)
     \item Campaign only predictor: prediction model using features generated from campaign graph network attributes
-    \item FIXME Candidate and campaign predictor: prediction model using features from both campaign graph network attributes and candidate attributes
 \end{itemize}
-
 
 \subsubsection{Naive baseline predictor}
 We define our \textbf{naive baseline predictor} as follows: given a pair of nodes$v_1, v_2$, we will always predict there will be an edge between these two pairs, i.e. as a complete graph. This is computed for $G_{co-sponsor}$.  That is, $$Accuracy_{Naive Baseline} = \frac{2||E||}{||V|| \dot (||V|| - 1)} $$

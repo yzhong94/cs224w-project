@@ -161,16 +161,21 @@ Our project is made up of two parts: graph modeling, and link prediction. For gr
 \medskip
 \hrule\medskip
 \Head{Link Prediction}\\
-We frame our link prediction problem as follows: predict the link between legislators, where a link exists if two legislators cosponored a bill together, for a specific Congress term.  \textbf{Features to predict this link all come from the campaign network \textit{prior t}o the Congress going into session}, which is a bipartite network (legislators and committees), where a link between a committee node and a legislator node exists if the committee donates money to the legislator.  We want to see if immediate donation has an effect on collaboration, hence we use campaign data two years before to predict the cosponsorship network during a congressional term. 
+We frame our link prediction problem as follows: predict the link between legislators, where a link exists if two legislators cosponored a bill together, for a specific Congress term.  
 
-For example, if we are predicting cosponsorship in the 100th congress (1987 - 1988), we would use campaign data from 1985 to 1986, in order to construct the features.
+We have constructed three link prediction models:
+\begin{itemize}
+    \item Naive baseline predictor: a baseline model based on graph density
+    \item Legislator only predictor: a baseline model based on candidate attributes (party, state)
+    \item Campaign only predictor: prediction model using features generated from campaign graph network attributes
+\end{itemize}
 
 \end{textblock}
 
 \begin{textblock}{7.0}(8,1.5)
 \hrule\medskip
 \Head{Features and Algorithms}\\
-We constructed features from the campaign subgraph solely. Features include: 
+We constructed features from the campaign subgraph for Campaign only predictor. Features include: 
 \begin{itemize}
 \item Common Neighbors, Union of Neighbors, Jaccard Index
 \item Degree Difference in a pair of legislator nodes
@@ -181,16 +186,18 @@ We constructed features from the campaign subgraph solely. Features include:
 \item Spectral Clusters from Clauset-Newman-Moore greedy modularity maximization
 \item node2vec embeddings
 \end{itemize}
-For algorithms, we used supervised learning models like \textbf{logistic regression} and \textbf{decision trees}. For logistic regression, we used scikit-learn's default implementation with {-1,1} notation for labels and $L2$ regularization. The optimization problem formulation is as $$min_{w,c} \frac{1}{2} w^Tw + C \sum_{i = 1}^{n} \log (e^{(-y_i (X^T_i w + c)) + 1})$$
+For features used in the Legislator only predictor, we collected legislators' affiliated party and home state information, by term. 
+
+For algorithms, we used supervised learning models like \textbf{logistic regression} and \textbf{decision trees}. For logistic regression, we used scikit-learn's default implementation with {-1,1} notation for labels and $L2$ regularization. A decision tree is a tree where each node represents a feature, each branch represents a decision/rule and each leaf represents a classification in our case. We used Scikit Learn's default implementation which uses Gini Index as the metric
 
 \medskip
 \hrule\medskip
 \Head{Evaluation Method}\\
 We used accuracy as our main success measure: $$Accuracy = \frac{NumberOfCorrectPredictions}{TotalNumberOfPredictionsMade}$$
 
-We define our \textbf{naive baseline predicto}r as follows: given a pair of nodes$v_1, v_2$, we will always predict there will be an edge between these two pairs, i.e. as a complete graph. That is, $$Accuracy_{Naive Baseline} = \frac{2||E||}{||V|| \dot (||V|| - 1)} $$
+We define our \textbf{naive baseline predictor} as follows: given a pair of nodes$v_1, v_2$, we will always predict there will be an edge between these two pairs, i.e. as a complete graph. That is, $$Accuracy_{Naive Baseline} = \frac{2||E||}{||V|| \dot (||V|| - 1)} $$
 
-Using the 100th Congress (1987 - 1988) as the training set and the 101th Congress (1989-1990) as the test set.  The baseline accuracy is calculated as $96,052/138,075= 0.695$.
+Using the 100th Congress (1987 - 1988) as the training set and the 101th Congress (1989-1990) as the test set. The baseline accuracy is calculated as $96,052/138,075= 0.695$.
 
 \medskip
 \hrule\medskip
@@ -230,11 +237,11 @@ For the \textbf{folded campaign contribution graph, it represents a typical smal
 
 \hline
 \multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Train Accuracy} & \multicolumn{1}{c|}{Test Accuracy} \\ \hline
-Naive Baseline  & 0.695      & 0.695         \\ \hline
-Candidate Party/State  & 0.695      & 0.698         \\ \hline
-Logistic Regression & 0.786      & 0.774         \\ \hline
-Decision Tree & 0.854      & 0.794         \\ \hline
-Logistic Reg w/ Node2Vec & 0.728      & 0.728         \\ \hline
+1 - Naive Baseline  & 0.695      & 0.695         \\ \hline
+2 - Candidate Party/State, Logistic Regression  & 0.695      & 0.698         \\ \hline
+3.1 - Campaign only, Logistic Regression & 0.786      & 0.774         \\ \hline
+3.2 - Campaign only, Decision Tree & 0.854      & 0.794         \\ \hline
+3.3 - Campaign only, Logistic Reg w/ node2Vec & 0.728      & 0.728         \\ \hline
 \end{tabular}
 %}
 \caption{Model Performance for Limited Dataset}
@@ -247,10 +254,10 @@ Logistic Reg w/ Node2Vec & 0.728      & 0.728         \\ \hline
 
 \hline
 \multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Train Accuracy} & \multicolumn{1}{c|}{Test Accuracy} \\ \hline
-Naive Baseline  & 0.697      & 0.691         \\ \hline
-Candidate Party/State  & 0.695      & 0.698         \\ \hline
-Logistic Regression & 0.748      & 0.714         \\ \hline
-Decision Tree & 0.795      & 0.740         \\ \hline
+1 - Naive Baseline  & 0.697      & 0.691         \\ \hline
+2 - Candidate Party/State, Logistic Regression  & 0.695      & 0.698         \\ \hline
+3.1 - Campaign only, Logistic Regression & 0.748      & 0.714         \\ \hline
+3.2 - Campaign only, Decision Tree & 0.795      & 0.740         \\ \hline
 \end{tabular}
 %}
 \caption{Model Performance for All Datasets Combined}
