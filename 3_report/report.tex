@@ -295,14 +295,13 @@ We have run models in two ways: based on limited dataset (i.e. training on the $
 \begin{table}[htb]
 \resizebox{\columnwidth}{!}{
 \begin{tabular}{|l|r|r|}
-
 \hline
 \multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Train Accuracy} & \multicolumn{1}{c|}{Test Accuracy} \\ \hline
-Naive Baseline  & 0.695      & 0.695         \\ \hline
-Candidate Party/State  & 0.695      & 0.698         \\ \hline
-Logistic Regression & 0.786      & 0.774         \\ \hline
-Decision Tree & 0.854      & 0.794         \\ \hline
-Logistic Reg w/ Node2Vec & 0.728      & 0.728         \\ \hline
+1.Naive Baseline  & 0.695      & 0.695         \\ \hline
+2.Candidate Party/State, Logistic Reg & 0.695      & 0.698         \\ \hline
+3.1.Campaign only, Logistic Regression & 0.786      & 0.774         \\ \hline
+3.2.Campaign only, Decision Tree & 0.854      & 0.794         \\ \hline
+3.3.Campaign only, Logistic Reg w/ node2Vec & 0.728      & 0.728         \\ \hline
 \end{tabular}
 }
 \caption{Model Performance for Limited Dataset}
@@ -315,10 +314,10 @@ Logistic Reg w/ Node2Vec & 0.728      & 0.728         \\ \hline
 
 \hline
 \multicolumn{1}{|c|}{Model} & \multicolumn{1}{c|}{Train Accuracy} & \multicolumn{1}{c|}{Test Accuracy} \\ \hline
-Naive Baseline  & 0.697      & 0.691         \\ \hline
-Candidate Party/State  & 0.695      & 0.698         \\ \hline
-Logistic Regression & 0.748      & 0.714         \\ \hline
-Decision Tree & 0.795      & 0.740         \\ \hline
+1.Naive Baseline  & 0.697      & 0.691         \\ \hline
+2.Candidate Party/State, Logistic Reg  & 0.695      & 0.698         \\ \hline
+3.1.Campaign only, Logistic Regression & 0.748      & 0.714         \\ \hline
+3.2.Campaign only, Decision Tree & 0.795      & 0.740         \\ \hline
 \end{tabular}
 }
 \caption{Model Performance for All Datasets Combined}
@@ -326,7 +325,6 @@ Decision Tree & 0.795      & 0.740         \\ \hline
 \end{table}
 
 To visualize models' accuracy in terms of true positives and true negatives, we have plotted confusion matrices for the limited dataset in Figures \ref{fig:confusion_tree_limited} and \ref{fig:logreg_limited}. %(confusion matrices for all datasets can be found in Appendix B)
-
 \begin{figure}
 \centering
 \begin{minipage}{0.48\linewidth}
@@ -342,17 +340,16 @@ To visualize models' accuracy in terms of true positives and true negatives, we 
 \label{fig:logreg_limited}
  \end{minipage}
 \end{figure}
-
 \subsection{Discussion}
 It's interesting to note that knowing candidates' party and home state information does not lead to a better model when compared to the naive baseline, and using node2vec as we tried in this paper does not help either. Decision tree performed neck and shoulders above the rest, and a better performance in avoiding false positives and false negatives too when compared to logistic regression. This lends support to our hypothesis that money has a big influence in political collaboration: knowing the network structures of candidates' campaign donation graphs, we can reliably predict whom they wil collaborate with when elected, in the form of co-sponsoring bills. 
 \section{Conclusion}
-US Congressional Politics is indeed a small world: legislators are connected to other legislators via common donors and co-authorship on bills. We have identified the academic collaboration network-like pattern for bill co-authorship data, and a "small world" pattern among legislators, with consistently high clustering coefficients. Moreover, it does appear that "money moves politics": using features learned from campaign donation networks, we can confidently predict if two legislators will later collaborate on bills together - easily beating a naive baseline. In particular, decision tree model performed very well to give us $82\%$ accuracy. 
+US Congressional Politics is indeed a small world: legislators are connected to other legislators via common donors and co-authorship on bills. We have identified the academic collaboration network-like pattern for bill co-authorship data, and a "small world" pattern among legislators, with consistently high clustering coefficients. Moreover, it does appear that "money moves politics": using features learned from campaign donation networks, we can confidently predict if two legislators will later collaborate on bills together - easily beating a naive baseline. In particular, decision tree model performed very well to give us $79.4\%$ accuracy for limited dataset. 
 
 This sheds new light on understanding politicians' behavior in Congress. Among many potential application, we now have a reliable way to predict if an elected candidate's campaign trail promises will likely carry through, by looking at whose money he/she has taken from, and with what other politicians does one share donors with. 
 
 \section{Acknowledgement}
 \textbf{Yi}: Cleaning and processing the bill co-authorship data, coming up and coding the algorithms for link prediction, problem formulation, running tests, tabulating final results, editing the report. \\
-\textbf{Eddie}: Plotting graphs during data analysis, cleaning and processing the campaign contribution data, conducting network descriptive analysis, problem formulation, writing up the report. \\
+\textbf{Eddie}: Plotting graphs during data analysis, cleaning and processing the campaign contribution data, conducting network descriptive analysis, problem formulation, writing up the report and the poster. \\
 We'd like to thank the CS224W TA stuff for helpful feedback to our project proposal and milestone report. 
 
 % trigger a \newpage just before the given reference

@@ -1,6 +1,11 @@
 # cs224w-project
 Link Prediction in Congress Bill Co-Sponsorship Networks Using Political Donor Network Information
 
+# Raw Data
+- Campaign Contribution Data by year (from FEC): https://www.dropbox.com/s/wo0t90vyqboajar/contributions_to_candidates.zip?dl=0
+- Candidate Master by year (from FEC): https://www.dropbox.com/s/sqd206u2a2e0xg3/candidate_master.zip?dl=0
+- Committee Master by year (from FEC): https://www.dropbox.com/s/d8ubfsk4jhszqk0/committee_master.zip?dl=0
+
 # Processed Data Directory
 - "../processed-data/party_candidates_attributes.csv": this contains party and state attributes for candidates. Checked for data consistency, and that each candidate only has one party affiliation in a given year
 - "../processed-data/candidate_node_mapping_manual.csv": manually inspected mapping between CAND_ID (from campaign files and records) to NodeID, as NodeID is the unified NodeID we use throughout the project
