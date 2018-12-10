@@ -167,7 +167,7 @@ We have constructed three link prediction models:
 \begin{itemize}
     \item Naive baseline predictor: a baseline model based on graph density
     \item Legislator only predictor: a baseline model based on candidate attributes (party, state)
-    \item Campaign only predictor: prediction model using features generated from campaign graph network attributes
+    \item Campaign only predictor: prediction models using features generated from campaign graph network attributes
 \end{itemize}
 
 \end{textblock}
@@ -186,9 +186,9 @@ We constructed features from the campaign subgraph for Campaign only predictor. 
 \item Spectral Clusters from Clauset-Newman-Moore greedy modularity maximization
 \item node2vec embeddings
 \end{itemize}
-For features used in the Legislator only predictor, we collected legislators' affiliated party and home state information, by term. 
+For features used in the Legislator only predictor, we collected legislators' affiliated party and home state information, by congressional term. 
 
-For algorithms, we used supervised learning models like \textbf{logistic regression} and \textbf{decision trees}. For logistic regression, we used scikit-learn's default implementation with {-1,1} notation for labels and $L2$ regularization. A decision tree is a tree where each node represents a feature, each branch represents a decision/rule and each leaf represents a classification in our case. We used Scikit Learn's default implementation which uses Gini Index as the metric
+For algorithms, we used supervised learning models like \textbf{logistic regression} and \textbf{decision trees}. For logistic regression, we used scikit-learn's default implementation with {-1,1} notation for labels and $L2$ regularization. A decision tree is a tree where each node represents a feature, each branch represents a decision/rule and each leaf represents a classification in our case. We used scikit-learn's default implementation which uses Gini Index as the metric.
 
 \medskip
 \hrule\medskip
