@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  9 DEC 2018 20:20
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  9 DEC 2018 20:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -428,42 +428,42 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 99.
 
-Underfull \hbox (badness 1817) in paragraph at lines 117--118
+Underfull \hbox (badness 1817) in paragraph at lines 116--117
 \OT1/cmr/bx/n/12 Features for link pre-dic-tion all come
  []
 
 [5]
-Underfull \hbox (badness 1377) in paragraph at lines 138--139
+Underfull \hbox (badness 1377) in paragraph at lines 137--138
 \OT1/cmr/m/n/12 Learn's im-ple-men-ta-tion of F-statistic in an
  []
 
 
-Underfull \hbox (badness 1057) in paragraph at lines 153--154
+Underfull \hbox (badness 1057) in paragraph at lines 152--153
 \OT1/cmr/m/n/12 into our ma-chine learn-ing mod-els, we con-
  []
 
 
-Overfull \hbox (3.13293pt too wide) detected at line 163
+Overfull \hbox (3.13293pt too wide) detected at line 162
 \OML/cmm/m/it/12 Accuracy \OT1/cmr/m/n/12 = []
  []
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 172--173
+Underfull \hbox (badness 10000) in paragraph at lines 171--172
 []\OT1/cmr/m/n/12 Edges be-tween leg-is-la-tors and bills:
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 174--175
+Underfull \hbox (badness 10000) in paragraph at lines 173--174
 []\OT1/cmr/m/n/12 Overall tri-par-tite graph node count:
  []
 
 
-Underfull \hbox (badness 2205) in paragraph at lines 177--178
+Underfull \hbox (badness 2205) in paragraph at lines 176--177
 []\OT1/cmr/m/n/12 In or-der to un-der-stand clus-ter-ing co-ef-fi-
  []
 
 
-Underfull \hbox (badness 1112) in paragraph at lines 177--178
+Underfull \hbox (badness 1112) in paragraph at lines 176--177
 \OT1/cmr/m/n/12 di-vided it into "bill" and "cam-paign" sub-
  []
 
@@ -471,7 +471,7 @@ Underfull \hbox (badness 1112) in paragraph at lines 177--178
 File: overall_deg_distro.png Graphic file (type png)
 
 <use overall_deg_distro.png>
-Package pdftex.def Info: overall_deg_distro.png used on input line 184.
+Package pdftex.def Info: overall_deg_distro.png used on input line 183.
 (pdftex.def)             Requested size: 122.16563pt x 91.61867pt.
 
 <candidate_in_bill_deg_distro.png, id=164, 578.16pt x 433.62pt>
@@ -479,7 +479,7 @@ File: candidate_in_bill_deg_distro.png Graphic file (type png)
 
 <use candidate_in_bill_deg_distro.png>
 Package pdftex.def Info: candidate_in_bill_deg_distro.png used on input line 19
-5.
+4.
 (pdftex.def)             Requested size: 109.94832pt x 82.46143pt.
 
 <candidate_in_campaign_deg_distro.png, id=165, 578.16pt x 433.62pt>
@@ -487,15 +487,15 @@ File: candidate_in_campaign_deg_distro.png Graphic file (type png)
 
 <use candidate_in_campaign_deg_distro.png>
 Package pdftex.def Info: candidate_in_campaign_deg_distro.png used on input lin
-e 201.
+e 200.
 (pdftex.def)             Requested size: 109.94832pt x 82.46143pt.
 
-Underfull \hbox (badness 6364) in paragraph at lines 202--202
+Underfull \hbox (badness 6364) in paragraph at lines 201--201
 []\OT1/cmr/m/n/12 Figure 4: []Degree
  []
 
 
-Underfull \hbox (badness 1515) in paragraph at lines 202--202
+Underfull \hbox (badness 1515) in paragraph at lines 201--201
 \OT1/cmr/m/n/12 Cam-paign Sub-graph
  []
 
@@ -504,20 +504,20 @@ _in_campaign_deg_distro.png>] <bill_role.png, id=180, 578.16pt x 433.62pt>
 File: bill_role.png Graphic file (type png)
 
 <use bill_role.png>
-Package pdftex.def Info: bill_role.png used on input line 215.
+Package pdftex.def Info: bill_role.png used on input line 214.
 (pdftex.def)             Requested size: 109.94832pt x 82.46143pt.
 
-Underfull \hbox (badness 1052) in paragraph at lines 216--216
+Underfull \hbox (badness 1052) in paragraph at lines 215--215
 []\OT1/cmr/m/n/12 Figure 5: []Roles in
  []
 
 <campaign_role.png, id=181, 578.16pt x 433.62pt>
 File: campaign_role.png Graphic file (type png)
  <use campaign_role.png>
-Package pdftex.def Info: campaign_role.png used on input line 221.
+Package pdftex.def Info: campaign_role.png used on input line 220.
 (pdftex.def)             Requested size: 109.94832pt x 82.46143pt.
 
-Underfull \hbox (badness 1052) in paragraph at lines 222--222
+Underfull \hbox (badness 1052) in paragraph at lines 221--221
 []\OT1/cmr/m/n/12 Figure 6: []Roles in
  []
 
@@ -525,22 +525,22 @@ Underfull \hbox (badness 1052) in paragraph at lines 222--222
 File: 2000_bill_degrees_log.png Graphic file (type png)
 
 <use 2000_bill_degrees_log.png>
-Package pdftex.def Info: 2000_bill_degrees_log.png used on input line 239.
+Package pdftex.def Info: 2000_bill_degrees_log.png used on input line 238.
 (pdftex.def)             Requested size: 109.94832pt x 79.09142pt.
 
 <2000_campaign_degrees_log.png, id=185, 393.47pt x 283.0575pt>
 File: 2000_campaign_degrees_log.png Graphic file (type png)
 
 <use 2000_campaign_degrees_log.png>
-Package pdftex.def Info: 2000_campaign_degrees_log.png used on input line 245.
+Package pdftex.def Info: 2000_campaign_degrees_log.png used on input line 244.
 (pdftex.def)             Requested size: 109.94832pt x 79.09142pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 246--246
+Underfull \hbox (badness 10000) in paragraph at lines 245--245
 \OT1/cmr/m/n/12 Sub-graph De-gree
  []
 
 [8 <./bill_role.png> <./campaign_role.png>]
-Underfull \hbox (badness 2229) in paragraph at lines 252--253
+Underfull \hbox (badness 2229) in paragraph at lines 251--252
 \OT1/cmr/m/n/12 Using 100th and 101st Congress, we first
  []
 
@@ -549,25 +549,25 @@ File: selector_percentile_grid_search.png Graphic file (type png)
 
 <use selector_percentile_grid_search.png>
 Package pdftex.def Info: selector_percentile_grid_search.png used on input line
- 278.
+ 277.
 (pdftex.def)             Requested size: 122.16563pt x 91.61867pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 279--279
+Underfull \hbox (badness 10000) in paragraph at lines 278--278
 []\OT1/cmr/m/n/12 Figure 9: []Selector
  []
 
 
-Underfull \hbox (badness 2334) in paragraph at lines 279--279
+Underfull \hbox (badness 2334) in paragraph at lines 278--278
 \OT1/cmr/m/n/12 Per-centile for Fea-ture
  []
 
 <max_depth_grid.png, id=199, 578.16pt x 433.62pt>
 File: max_depth_grid.png Graphic file (type png)
  <use max_depth_grid.png>
-Package pdftex.def Info: max_depth_grid.png used on input line 285.
+Package pdftex.def Info: max_depth_grid.png used on input line 284.
 (pdftex.def)             Requested size: 122.16563pt x 91.61867pt.
 
-Underfull \hbox (badness 2818) in paragraph at lines 309--309
+Underfull \hbox (badness 2818) in paragraph at lines 308--308
 []\OT1/cmr/m/n/12 Table 1: []Model Per-for-mance for Lim-ited
  []
 
@@ -575,25 +575,25 @@ Underfull \hbox (badness 2818) in paragraph at lines 309--309
 File: confusion_tree_limited.png Graphic file (type png)
 
 <use confusion_tree_limited.png>
-Package pdftex.def Info: confusion_tree_limited.png used on input line 335.
+Package pdftex.def Info: confusion_tree_limited.png used on input line 334.
 (pdftex.def)             Requested size: 117.27797pt x 87.95709pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 336--336
+Underfull \hbox (badness 10000) in paragraph at lines 335--335
 \OT1/cmr/m/n/12 Ma-trix for De-ci-
  []
 
 
-Underfull \hbox (badness 1062) in paragraph at lines 336--336
+Underfull \hbox (badness 1062) in paragraph at lines 335--335
 \OT1/cmr/m/n/12 sion Tree in Lim-ited
  []
 
 <logreg_limited.png, id=205, 462.528pt x 346.896pt>
 File: logreg_limited.png Graphic file (type png)
  <use logreg_limited.png>
-Package pdftex.def Info: logreg_limited.png used on input line 341.
+Package pdftex.def Info: logreg_limited.png used on input line 340.
 (pdftex.def)             Requested size: 117.27797pt x 87.95709pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 342--342
+Underfull \hbox (badness 10000) in paragraph at lines 341--341
 \OT1/cmr/m/n/12 Ma-trix for Lo-gis-tic
  []
 
@@ -602,7 +602,7 @@ Underfull \vbox (badness 7486) has occurred while \output is active []
 
  [9 <./2000_bill_degrees_log.png> <./2000_campaign_degrees_log.png> <./selector
 _percentile_grid_search.png> <./max_depth_grid.png>]
-Underfull \hbox (badness 2126) in paragraph at lines 355--358
+Underfull \hbox (badness 2126) in paragraph at lines 354--357
 \OT1/cmr/bx/n/12 Yi\OT1/cmr/m/n/12 : Clean-ing and pro-cess-ing the bill co-
  []
 
@@ -627,19 +627,19 @@ Underfull \hbox (badness 10000) in paragraph at lines 51--53
  []
 
 )
-Underfull \hbox (badness 5345) in paragraph at lines 372--372
+Underfull \hbox (badness 5345) in paragraph at lines 371--371
  |[]\OT1/cmr/bx/n/17.28 Feature Rank-ing with
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 392.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 391.
 [11]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 392.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 391.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 392.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 392.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 391.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 391.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 176E9F9BE8D20308C787DD005986B234;1212.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 392.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 391.
  ) 
 Here is how much of TeX's memory you used:
  7017 strings out of 493089
